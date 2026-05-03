@@ -293,14 +293,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.735849, g: 0.30961192, b: 0.36597386, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8770001503089466214, guid: 274b7297e86ea5d479982dcc0adec0c5, type: 3}
+  m_Sprite: {fileID: -8036623524297915790, guid: 8ea16c777a904514da19933465448f6a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -323,7 +323,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
-  m_MinWidth: 30
+  m_MinWidth: 35
   m_MinHeight: 40
   m_PreferredWidth: 40
   m_PreferredHeight: 40
@@ -687,7 +687,7 @@ MonoBehaviour:
   levelText: {fileID: 6135607221504902185}
   enemiesText: {fileID: 7837086461414734634}
   xpFillImage: {fileID: 7150325668357931896}
-  currentLevel: 1
+  currentLevel: 2
   enemiesLeft: 0
-  currentXP: 0
+  currentXP: 80
   maxXP: 100
