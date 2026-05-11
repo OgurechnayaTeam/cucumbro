@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 1152111461740533534}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.007858479, w: 0.9999692}
-  m_LocalPosition: {x: -0.45269084, y: -1.01569, z: 0}
+  m_LocalPosition: {x: 0.6872822, y: -2.072647, z: 0}
   m_LocalScale: {x: 0.5795761, y: 0.6505461, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -117,8 +117,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1036481251212222556}
   - {fileID: 8525741864828050161}
@@ -153,7 +153,7 @@ Transform:
   m_GameObject: {fileID: 2207314533678694103}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.021633571, w: -0.999766}
-  m_LocalPosition: {x: -0.2742799, y: 0.1891333, z: 0}
+  m_LocalPosition: {x: 0.86569315, y: -0.86782396, z: 0}
   m_LocalScale: {x: -0.535419, y: 0.49192867, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -244,7 +244,7 @@ Transform:
   m_GameObject: {fileID: 4217794961734143129}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.006240262, w: 0.99998057}
-  m_LocalPosition: {x: -1.543287, y: -1.151206, z: 0}
+  m_LocalPosition: {x: -0.403314, y: -2.2081633, z: 0}
   m_LocalScale: {x: 0.5795649, y: 0.65055996, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -335,7 +335,7 @@ Transform:
   m_GameObject: {fileID: 4905965139170554102}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.037398815, w: -0.9993004}
-  m_LocalPosition: {x: -2.289973, y: 0.05695724, z: 0}
+  m_LocalPosition: {x: -1.15, y: -1, z: 0}
   m_LocalScale: {x: -0.7105193, y: 0.6455184, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -426,7 +426,7 @@ Transform:
   m_GameObject: {fileID: 5267938073591077512}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.025733188, w: 0.99966884}
-  m_LocalPosition: {x: -1.15, y: 0.79, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.6158, y: 0.5659, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -501,6 +501,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5545594251680633591}
   - component: {fileID: 6170302694827828976}
+  - component: {fileID: -5744960967955983510}
+  - component: {fileID: 5658764396386297883}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -517,9 +519,9 @@ Transform:
   m_GameObject: {fileID: 8346628276484770278}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.09568, y: -0.24, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
-  m_ConstrainProportionsScale: 1
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3514145488584216314}
   m_Father: {fileID: 0}
@@ -546,3 +548,44 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!50 &-5744960967955983510
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8346628276484770278}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &5658764396386297883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8346628276484770278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d836817b90eec54aabbe578e0f8200a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player
+  moveSpeed: 6
+  useFallbackInput: 1
