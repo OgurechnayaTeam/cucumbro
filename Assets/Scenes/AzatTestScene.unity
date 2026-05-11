@@ -607,7 +607,17 @@ Camera:
   orthographic: 1
   orthographic size: 5
   m_Depth: -1
-  m_CullingMask:
+  m_CullingMask:UnityConnectWebRequestException: Token Exchange failed due a failure with the web request.
+UnityEditor.Connect.TokenExchange.VerifyTokenExchangeResponse (UnityEngine.Networking.UnityWebRequest exchangeRequest) (at /home/bokken/build/output/unity/unity/Editor/Mono/UnityConnect/ServiceToken/TokenExchange/TokenExchange.cs:106)
+UnityEditor.Connect.TokenExchange.TokenExchangeRequestAsync (UnityEditor.Connect.TokenExchangeRequest tokenExchangeRequest, System.Threading.CancellationToken cancellationToken) (at /home/bokken/build/output/unity/unity/Editor/Mono/UnityConnect/ServiceToken/TokenExchange/TokenExchange.cs:89)
+UnityEditor.Connect.TokenExchange.GetServiceTokenAsync (System.String genesisToken, System.Threading.CancellationToken cancellationToken) (at /home/bokken/build/output/unity/unity/Editor/Mono/UnityConnect/ServiceToken/TokenExchange/TokenExchange.cs:33)
+UnityEditor.Connect.ServiceToken.GetServiceTokenAsync (System.String genesisToken, System.Threading.CancellationToken cancellationToken) (at /home/bokken/build/output/unity/unity/Editor/Mono/UnityConnect/ServiceToken/ServiceToken.cs:50)
+UnityEditor.Connect.UnityConnect.RequestNewServiceToken () (at /home/bokken/build/output/unity/unity/Editor/Mono/UnityConnect/UnityConnect.bindings.cs:564)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore+<>c.<ThrowAsync>b__7_0 (System.Object state) (at <1bdc97936f564eb98deb7626cd2dd805>:0)
+UnityEngine.UnitySynchronizationContext+WorkRequest.Invoke () (at /home/bokken/build/output/unity/unity/Runtime/Export/Scripting/UnitySynchronizationContext.cs:156)
+UnityEngine.UnitySynchronizationContext.Exec () (at /home/bokken/build/output/unity/unity/Runtime/Export/Scripting/UnitySynchronizationContext.cs:84)
+UnityEngine.UnitySynchronizationContext.ExecuteTasks () (at /home/bokken/build/output/unity/unity/Runtime/Export/Scripting/UnitySynchronizationContext.cs:110)
+
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
