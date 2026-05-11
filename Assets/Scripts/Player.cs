@@ -1,26 +1,45 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
-    Rigidbody2D rb;
+    [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] private InputActionReference moveAction;
 
-    [SerializeField] float moveSpeed = 6;
+    private Rigidbody2D rb;
+    private Vector2 movement;
+    private Vector3 startingScale;
+    private int facingDirection = 1;
 
-    Vector2 movement;
-    int facingDirection = 1; // 1 = right, -1 = left
-
-    private void Start()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        startingScale = transform.localScale;
+    }
+
+    private void OnEnable()
+    {
+        if (moveAction != null)
+            moveAction.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (moveAction != null)
+            moveAction.action.Disable();
     }
 
     private void Update()
     {
-        if (movement.x != 0)
-            facingDirection = movement.x > 0 ? 1 : -1;
+        if (moveAction != null)
+            movement = Vector2.ClampMagnitude(moveAction.action.ReadValue<Vector2>(), 1f);
 
-        transform.localScale = new Vector2(facingDirection, 1);
+        if (Mathf.Abs(movement.x) > 0.01f)
+        {
+            facingDirection = movement.x > 0 ? 1 : -1;
+            UpdateFacingDirection();
+        }
     }
 
     private void FixedUpdate()
@@ -28,8 +47,11 @@ public class Player : MonoBehaviour
         rb.linearVelocity = movement * moveSpeed;
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    private void UpdateFacingDirection()
     {
-        movement = context.ReadValue<Vector2>().normalized;
+        transform.localScale = new Vector3(
+            Mathf.Abs(startingScale.x) * facingDirection,
+            startingScale.y,
+            startingScale.z);
     }
 }
