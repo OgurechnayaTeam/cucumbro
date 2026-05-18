@@ -29,6 +29,33 @@ TextureImporter:
   - first:
       213: 2267385899087131133
     second: enemy_spites_8
+  - first:
+      213: 5485272802442495740
+    second: enemy_spites_9
+  - first:
+      213: -2136414577150272988
+    second: enemy_spites_10
+  - first:
+      213: -6747361610297731602
+    second: enemy_spites_11
+  - first:
+      213: -2838490530184004040
+    second: enemy_spites_12
+  - first:
+      213: 8157946577325949384
+    second: enemy_spites_13
+  - first:
+      213: 620881985956917768
+    second: enemy_spites_14
+  - first:
+      213: 4429301132264888465
+    second: enemy_spites_15
+  - first:
+      213: 8310932088859307032
+    second: enemy_spites_16
+  - first:
+      213: 8155892209874485994
+    second: enemy_spites_17
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -127,12 +154,12 @@ TextureImporter:
       name: enemy_spites_0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 254
-        width: 70
-        height: 79
+        x: 642
+        y: 400
+        width: 73
+        height: 76
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -149,12 +176,12 @@ TextureImporter:
       name: enemy_spites_1
       rect:
         serializedVersion: 2
-        x: 127
-        y: 141
-        width: 97
-        height: 193
+        x: 720
+        y: 409
+        width: 60
+        height: 71
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -171,12 +198,12 @@ TextureImporter:
       name: enemy_spites_2
       rect:
         serializedVersion: 2
-        x: 266
-        y: 136
-        width: 97
-        height: 193
+        x: 792
+        y: 401
+        width: 71
+        height: 76
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -193,12 +220,12 @@ TextureImporter:
       name: enemy_spites_3
       rect:
         serializedVersion: 2
-        x: 405
-        y: 229
-        width: 162
-        height: 227
+        x: 656
+        y: 336
+        width: 54
+        height: 63
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -215,12 +242,12 @@ TextureImporter:
       name: enemy_spites_4
       rect:
         serializedVersion: 2
-        x: 591
-        y: 227
-        width: 130
-        height: 215
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 726
+        y: 360
+        width: 27
+        height: 38
+      alignment: 9
+      pivot: {x: 0.49066162, y: 0.86161566}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -237,12 +264,12 @@ TextureImporter:
       name: enemy_spites_5
       rect:
         serializedVersion: 2
-        x: 22
-        y: 155
-        width: 66
-        height: 79
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 755
+        y: 355
+        width: 32
+        height: 40
+      alignment: 9
+      pivot: {x: 0.56697464, y: 0.78050077}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -259,12 +286,12 @@ TextureImporter:
       name: enemy_spites_6
       rect:
         serializedVersion: 2
-        x: 439
-        y: 9
-        width: 127
-        height: 212
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 798
+        y: 343
+        width: 27
+        height: 52
+      alignment: 9
+      pivot: {x: 0.24560095, y: 0.8457665}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -281,12 +308,12 @@ TextureImporter:
       name: enemy_spites_7
       rect:
         serializedVersion: 2
-        x: 21
-        y: 40
-        width: 74
-        height: 81
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 832
+        y: 343
+        width: 28
+        height: 53
+      alignment: 9
+      pivot: {x: 0.72366333, y: 0.7858783}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -303,12 +330,12 @@ TextureImporter:
       name: enemy_spites_8
       rect:
         serializedVersion: 2
-        x: 150
-        y: 56
-        width: 92
-        height: 44
+        x: 24
+        y: 254
+        width: 70
+        height: 79
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -321,11 +348,209 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: enemy_spites_9
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 141
+        width: 97
+        height: 193
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf642b53d8a9f1c40800000000000000
+      internalID: 5485272802442495740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enemy_spites_10
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 136
+        width: 97
+        height: 193
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42addf3e24ee952e0800000000000000
+      internalID: -2136414577150272988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enemy_spites_11
+      rect:
+        serializedVersion: 2
+        x: 668
+        y: 274
+        width: 35
+        height: 59
+      alignment: 9
+      pivot: {x: 0.80976564, y: 0.86324507}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee5981f4d5e8c52a0800000000000000
+      internalID: -6747361610297731602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enemy_spites_12
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 282
+        width: 70
+        height: 72
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83e721ad6e7ab98d0800000000000000
+      internalID: -2838490530184004040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enemy_spites_13
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 290
+        width: 28
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5432914, y: 0.8005676}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c1802e7039d63170800000000000000
+      internalID: 8157946577325949384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enemy_spites_14
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 291
+        width: 28
+        height: 37
+      alignment: 9
+      pivot: {x: 0.48556736, y: 0.84398174}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 802b66c60e0dd9800800000000000000
+      internalID: 620881985956917768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enemy_spites_15
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 155
+        width: 66
+        height: 79
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19852ef89e9087d30800000000000000
+      internalID: 4429301132264888465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enemy_spites_16
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 40
+        width: 74
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81caadc93bc565370800000000000000
+      internalID: 8310932088859307032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enemy_spites_17
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 56
+        width: 92
+        height: 44
+      alignment: 9
+      pivot: {x: 0.7690801, y: 0.73238754}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae2c1fbc0cc8f2170800000000000000
+      internalID: 8155892209874485994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 11c535d74d217fd4583a16fe9a1121c3
     internalID: 0
     vertices: []
     indices: 
@@ -337,6 +562,14 @@ TextureImporter:
     nameFileIdTable:
       enemy_spites_0: 3527609042404008287
       enemy_spites_1: 1508697996463920402
+      enemy_spites_10: -2136414577150272988
+      enemy_spites_11: -6747361610297731602
+      enemy_spites_12: -2838490530184004040
+      enemy_spites_13: 8157946577325949384
+      enemy_spites_14: 620881985956917768
+      enemy_spites_15: 4429301132264888465
+      enemy_spites_16: 8310932088859307032
+      enemy_spites_17: 8155892209874485994
       enemy_spites_2: -7010604376075031872
       enemy_spites_3: 7699916570125853398
       enemy_spites_4: -2294230098905161333
@@ -344,6 +577,7 @@ TextureImporter:
       enemy_spites_6: 1095850721548984945
       enemy_spites_7: -4930445565949583564
       enemy_spites_8: 2267385899087131133
+      enemy_spites_9: 5485272802442495740
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
