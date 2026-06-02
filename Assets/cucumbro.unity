@@ -326,38 +326,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1036481251212222556, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -2.092
-      objectReference: {fileID: 0}
-    - target: {fileID: 1036481251212222556, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.557
-      objectReference: {fileID: 0}
-    - target: {fileID: 1973146394317802142, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.802
-      objectReference: {fileID: 0}
-    - target: {fileID: 1973146394317802142, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.658
-      objectReference: {fileID: 0}
-    - target: {fileID: 3876351743676573008, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_SortingOrder
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4617260639313772038, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5495962276778809670, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.816
-      objectReference: {fileID: 0}
-    - target: {fileID: 5495962276778809670, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.593
-      objectReference: {fileID: 0}
     - target: {fileID: 5545594251680633591, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.7
@@ -398,33 +366,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5545594251680633591, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8346628276484770278, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 8525741864828050161, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.3503245
-      objectReference: {fileID: 0}
-    - target: {fileID: 8525741864828050161, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.36275357
-      objectReference: {fileID: 0}
-    - target: {fileID: 8525741864828050161, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.99884325
-      objectReference: {fileID: 0}
-    - target: {fileID: 8525741864828050161, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.0480852
-      objectReference: {fileID: 0}
-    - target: {fileID: 8525741864828050161, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 5.512
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
