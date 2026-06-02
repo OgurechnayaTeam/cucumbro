@@ -1,190 +1,126 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private Transform playerTransform; 
-    [SerializeField] private GameObject muzzle;
-    [SerializeField] private Transform muzzlePosition;
-    [SerializeField] private GameObject projectile;
+
+    [Header("Prefabs")]
+    [SerializeField] GameObject muzzle;
+    [SerializeField] Transform muzzlePosition;
+    [SerializeField] GameObject projectile;
 
     [Header("Config")]
-    [SerializeField] private float fireDistance = 10f;
-    [SerializeField] private float fireRate = 0.5f;
+    [SerializeField] float fireDistance = 10;
+    [SerializeField] float fireRate = 0.5f;
 
-    [Header("Positioning")]
-    [SerializeField] private Vector2 defaultOffset = new Vector2(1f, 0f);
+    Transform player;
+    Vector2 offset;
 
-    // Приватные поля
-    private Vector2 currentOffset;
-    private float timeSinceLastShot;
-    private Transform closestEnemy;
-    private Animator anim;
-    private SpriteRenderer spriteRenderer;
+    private float timeSinceLastShot = 0f;
+    Transform closestEnemy;
+    Animator anim;
+
 
     private void Start()
     {
-        // Инициализация компонентов
         anim = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (spriteRenderer == null)
-        {
-            Debug.LogError("[Gun] SpriteRenderer not found! Disabling script.");
-            enabled = false;
-            return;
-        }
-
-        // Проверка обязательной ссылки на игрока
-        if (playerTransform == null)
-        {
-            Debug.LogError("[Gun] Player Transform is not assigned in Inspector! Please drag the Player object here.");
-            enabled = false;
-            return;
-        }
-
-        // Поиск точки выстрела
-        if (muzzlePosition == null)
-        {
-            muzzlePosition = transform.Find("MuzzlePosition");
-            if (muzzlePosition == null)
-            {
-                Debug.LogError("[Gun] MuzzlePosition not found! Create a child object named 'MuzzlePosition' at the gun's tip.");
-                enabled = false;
-                return;
-            }
-        }
-
-        // Начальные настройки
         timeSinceLastShot = fireRate;
-        currentOffset = defaultOffset;
+        player = GameObject.Find("Player").transform;
 
-        Debug.Log($"[Gun] Started successfully. Attached to player at offset: {currentOffset}");
+        SetOffset(new Vector2(1, 0.5f));
+
     }
 
     private void Update()
     {
-        if (playerTransform == null || !enabled) return;
 
-        // Прикрепляем пушку к игроку с заданным смещением
-        transform.position = (Vector2)playerTransform.position + currentOffset;
+        transform.localPosition = offset;
 
-        // Ищем ближайшего врага в радиусе действия
         FindClosestEnemy();
-
-        // Если есть цель — целимся и стреляем
-        if (closestEnemy != null && Vector2.Distance(transform.position, closestEnemy.position) <= fireDistance)
-        {
-            AimAtEnemy();
-            Shooting();
-        }
-        else
-        {
-            ResetToIdle();
-        }
+        AimAtEnemy();
+        Shooting();
     }
 
-    /// <summary>
-    /// Находит ближайшего врага с тегом "Enemy" в радиусе fireDistance
-    /// </summary>
-    private void FindClosestEnemy()
+    void Shooting()
     {
-        closestEnemy = null;
-        float shortestDistance = Mathf.Infinity;
+        // Если врага нет или он слишком далеко — выходим
+        if (closestEnemy == null || Vector2.Distance(transform.position, closestEnemy.position) > fireDistance)
+            return;
 
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        foreach (GameObject enemy in enemies)
-        {
-            float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance < shortestDistance && distance <= fireDistance)
-            {
-                shortestDistance = distance;
-                closestEnemy = enemy.transform;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Поворачивает пушку в сторону ближайшего врага
-    /// </summary>
-    private void AimAtEnemy()
-    {
-        if (closestEnemy == null) return;
-
-        Vector2 direction = (closestEnemy.position - transform.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-    }
-
-    /// <summary>
-    /// Возвращает пушку в исходное положение (смотрит вправо)
-    /// </summary>
-    private void ResetToIdle()
-    {
-        transform.rotation = Quaternion.Euler(0, 0, 0);
-
-        // Если используется аниматор — сбрасываем состояние выстрела
-        if (anim != null && anim.GetCurrentAnimatorStateInfo(0).IsName("Fire"))
-        {
-            anim.Play("Idle");
-        }
-    }
-
-    /// <summary>
-    /// Логика стрельбы с учётом скорострельности
-    /// </summary>
-    private void Shooting()
-    {
+        // Таймер перезарядки
         timeSinceLastShot += Time.deltaTime;
 
         if (timeSinceLastShot >= fireRate)
         {
-            Shoot();
+            Shoot(); 
             timeSinceLastShot = 0f;
         }
     }
 
-    /// <summary>
-    /// Создаёт визуальные эффекты и снаряд
-    /// </summary>
-    private void Shoot()
+    void FindClosestEnemy()
     {
-        // Запуск анимации выстрела
-        if (anim != null)
-            anim.SetTrigger("Fire");
+        closestEnemy = null;
+        float closestDistance = Mathf.Infinity;
 
-        // Создание эффекта дульного пламени
-        if (muzzle != null && muzzlePosition != null)
+        EnemyDarya[] enemies = FindObjectsOfType<EnemyDarya>();
+
+        foreach (EnemyDarya enemy in enemies)
         {
-            GameObject muzzleEffect = Instantiate(muzzle, muzzlePosition.position, transform.rotation);
-            muzzleEffect.transform.SetParent(transform);
-            Destroy(muzzleEffect, 0.05f);
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance <= fireDistance)
+            {
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = enemy.transform;
+                }
+            }
         }
+    }
+
+    void AimAtEnemy()
+    {
+        if (closestEnemy != null)
+        {
+            Vector3 direction = closestEnemy.position - transform.position;
+            direction.Normalize();
+
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+    }
+
+
+    void Shoot()
+    {
+        // Эффект вспышки
+        var muzzleGo = Instantiate(muzzle, muzzlePosition.position, transform.rotation);
+        muzzleGo.transform.SetParent(transform);
+        Destroy(muzzleGo, 0.1f);
 
         // Создание снаряда
-        if (projectile != null && muzzlePosition != null)
+        var projectileGo = Instantiate(projectile, muzzlePosition.position, transform.rotation);
+
+        Rigidbody2D bulletRb = projectileGo.GetComponent<Rigidbody2D>();
+        if (bulletRb != null)
         {
-            GameObject bullet = Instantiate(projectile, muzzlePosition.position, transform.rotation);
-            Destroy(bullet, 3f);
+            bulletRb.linearVelocity = transform.right * fireDistance;
+        }
+
+        Destroy(projectileGo, 3f);
+
+        if (anim != null)
+        {
+            anim.SetTrigger("Fire"); 
         }
     }
 
-    /// <summary>
-    /// Устанавливает новое смещение пушки относительно игрока
-    /// </summary>
-    public void SetOffset(Vector2 newOffset)
+    public void SetOffset(Vector2 o)
     {
-        currentOffset = newOffset;
-        if (playerTransform != null)
-            transform.position = (Vector2)playerTransform.position + currentOffset;
+        offset = o;
     }
 
-    /// <summary>
-    /// Возвращает текущее смещение
-    /// </summary>
-    public Vector2 GetOffset()
-    {
-        return currentOffset;
-    }
 }

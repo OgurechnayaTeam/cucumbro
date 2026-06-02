@@ -107,7 +107,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.38268343, w: 0.92387956}
   m_LocalPosition: {x: 1.9548368, y: 1.3995452, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7849636280169236304}
@@ -185,13 +185,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Katana
   playerTransform: {fileID: 5545594251680633591, guid: 87c9dbf121366cc468040f5455463c35, type: 3}
-  defaultOffset: {x: 1, y: 0}
   attackRange: 1.5
   damage: 10
   attackCooldown: 0.8
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   anim: {fileID: 8628504042757350504}
   hitCollider: {fileID: 9120865204991909820}
 --- !u!95 &8628504042757350504
