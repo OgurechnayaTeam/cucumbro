@@ -2,35 +2,27 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] float speed = 10f; // Скорость полёта
-    [SerializeField] float lifetime = 3f; // Время жизни
-
-    private Vector2 direction;
+    [SerializeField] private int damage = 10; // РЈСЂРѕРЅ РїСѓР»Рё
+    [SerializeField] private float lifetime = 3f; // Р’СЂРµРјСЏ Р¶РёР·РЅРё
 
     void Start()
     {
-        // Удаляем пулю через lifetime секунд
+        // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ СѓРґР°Р»РµРЅРёРµ, РµСЃР»Рё РїСѓР»СЏ РЅРёРєСѓРґР° РЅРµ РїРѕРїР°Р»Р°
         Destroy(gameObject, lifetime);
-
-        // Направление берём из текущего поворота объекта
-        direction = transform.right; // Если пуля смотрит вправо по умолчанию
     }
 
-    void Update()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Двигаем пулю в направлении её поворота
-        transform.Translate(direction * speed * Time.deltaTime);
-    }
+        // РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРєСЂРёРїС‚Р° РІСЂР°РіР° РЅР°РїСЂСЏРјСѓСЋ, Р° РЅРµ РїРѕ С‚РµРіСѓ
+        EnemyDarya enemy = collision.gameObject.GetComponent<EnemyDarya>();
 
-    // Если нужно наносить урон при столкновении
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Enemy"))
+        if (enemy != null)
         {
-            Debug.Log("Hit Enemy!");
-            // Здесь можно вызвать метод нанесения урона у врага
-            // other.GetComponent<Enemy>().TakeDamage(10);
-            Destroy(gameObject); // Уничтожаем пулю при попадании
+            enemy.TakeDamage(damage);
+            Debug.Log($"Hit Enemy! Damage: {damage}");
         }
+
+        // РЈРЅРёС‡С‚РѕР¶Р°РµРј РїСѓР»СЋ РїСЂРё Р»СЋР±РѕРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёРё (РІСЂР°Рі РёР»Рё СЃС‚РµРЅР°)
+        Destroy(gameObject);
     }
 }
