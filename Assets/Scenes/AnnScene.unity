@@ -219,14 +219,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1881586606580245152, guid: eefdef13b7b80bd4496937533701cd33, type: 3}
-      propertyPath: m_SortingOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2351617500454923551, guid: eefdef13b7b80bd4496937533701cd33, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2630336883880741162, guid: eefdef13b7b80bd4496937533701cd33, type: 3}
       propertyPath: m_Name
       value: SkeletonOnionEnemy
@@ -270,22 +262,6 @@ PrefabInstance:
     - target: {fileID: 5429122686679915127, guid: eefdef13b7b80bd4496937533701cd33, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6674435840474453318, guid: eefdef13b7b80bd4496937533701cd33, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7282336742845968312, guid: eefdef13b7b80bd4496937533701cd33, type: 3}
-      propertyPath: m_SortingLayer
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7282336742845968312, guid: eefdef13b7b80bd4496937533701cd33, type: 3}
-      propertyPath: m_SortingLayerID
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9004990040838905720, guid: eefdef13b7b80bd4496937533701cd33, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
