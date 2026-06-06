@@ -5,6 +5,7 @@ public class Katana : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private Transform katanaPivot; // <-- НОВЫЙ pivot для вращения
 
     [Header("Combat")]
     [SerializeField] private float attackRange = 3.5f;
@@ -37,6 +38,10 @@ public class Katana : MonoBehaviour
 
         if (playerTransform == null && transform.parent != null)
             playerTransform = transform.parent;
+
+        // Если pivot не назначен, используем текущий transform
+        if (katanaPivot == null)
+            katanaPivot = transform;
     }
 
     private void Update()
@@ -86,11 +91,13 @@ public class Katana : MonoBehaviour
         {
             Vector2 dir = (closest.position - transform.position).normalized;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            transform.localRotation = Quaternion.Euler(0, 0, angle);
+
+            // Вращаем ТОЛЬКО pivot, а не саму катану
+            katanaPivot.localRotation = Quaternion.Euler(0, 0, angle);
         }
         else
         {
-            transform.localRotation = Quaternion.identity;
+            katanaPivot.localRotation = Quaternion.identity;
         }
     }
 

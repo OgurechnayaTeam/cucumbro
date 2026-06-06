@@ -190,7 +190,7 @@ MonoBehaviour:
   attackCooldown: 0.8
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 512
   anim: {fileID: 8628504042757350504}
   hitCollider: {fileID: 9120865204991909820}
 --- !u!95 &8628504042757350504
