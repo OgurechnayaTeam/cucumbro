@@ -5,7 +5,7 @@ public class Katana : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform playerTransform;
-    [SerializeField] private Transform katanaPivot; // <-- НОВЫЙ pivot для вращения
+    [SerializeField] private Transform katanaPivot; // Точка, вокруг которой вращается меч
 
     [Header("Combat")]
     [SerializeField] private float attackRange = 3.5f;
@@ -13,33 +13,38 @@ public class Katana : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.8f;
     [SerializeField] private LayerMask enemyLayer;
 
-    [Header("Visuals")]
+    [Header("Visuals & Physics")]
     [SerializeField] private Animator anim;
     [SerializeField] private Collider2D hitCollider;
 
     private float timeSinceLastAttack;
-    private bool isAttacking = false;
+    private bool isAttacking;
     private HashSet<EnemyDarya> damagedEnemies = new HashSet<EnemyDarya>();
 
     private void Start()
     {
+        // Инициализация коллайдера
         if (hitCollider != null)
         {
             hitCollider.enabled = false;
             if (!hitCollider.isTrigger)
-                Debug.LogError("[Katana] HitCollider MUST be a Trigger!");
+            {
+                Debug.LogWarning("[Katana] HitCollider should be a Trigger! Fixing...");
+                hitCollider.isTrigger = true;
+            }
         }
         else
         {
-            Debug.LogError("[Katana] HitCollider NOT assigned! Add a Collider2D with IsTrigger and assign it.");
+            Debug.LogError("[Katana] HitCollider NOT assigned! Add a Collider2D with IsTrigger.");
         }
 
         timeSinceLastAttack = attackCooldown;
 
+        // Авто-поиск игрока
         if (playerTransform == null && transform.parent != null)
             playerTransform = transform.parent;
 
-        // Если pivot не назначен, используем текущий transform
+        // Авто-поиск пивота
         if (katanaPivot == null)
             katanaPivot = transform;
     }
@@ -48,13 +53,16 @@ public class Katana : MonoBehaviour
     {
         timeSinceLastAttack += Time.deltaTime;
 
+        // Вращаемся к врагу только если НЕ атакуем
         if (!isAttacking)
+        {
             RotateTowardsNearestEnemy();
 
-        if (!isAttacking && timeSinceLastAttack >= attackCooldown)
-        {
-            if (HasEnemyInRange())
+            // Проверяем, можно ли атаковать
+            if (timeSinceLastAttack >= attackCooldown && HasEnemyInRange())
+            {
                 Attack();
+            }
         }
     }
 
@@ -70,6 +78,7 @@ public class Katana : MonoBehaviour
 
     private void RotateTowardsNearestEnemy()
     {
+        // Ищем врагов в увеличенном радиусе, чтобы меч "смотрел" на них заранее
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange * 2, enemyLayer);
         Transform closest = null;
         float minDist = Mathf.Infinity;
@@ -87,16 +96,17 @@ public class Katana : MonoBehaviour
             }
         }
 
-        if (closest != null)
+        if (closest != null && katanaPivot != null)
         {
-            Vector2 dir = (closest.position - transform.position).normalized;
+            Vector2 dir = (closest.position - katanaPivot.position).normalized;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
-            // Вращаем ТОЛЬКО pivot, а не саму катану
+            // Вращаем именно пивот, а не сам спрайт меча (если они разделены)
             katanaPivot.localRotation = Quaternion.Euler(0, 0, angle);
         }
-        else
+        else if (katanaPivot != null)
         {
+            // Возврат в нейтральное положение
             katanaPivot.localRotation = Quaternion.identity;
         }
     }
@@ -109,21 +119,23 @@ public class Katana : MonoBehaviour
 
         if (anim != null)
             anim.SetTrigger("Attack");
-        else
-            Debug.LogWarning("[Katana] Animator not assigned!");
 
+        // Включаем хитбокс на короткое время
         if (hitCollider != null)
         {
             hitCollider.enabled = true;
-            Invoke(nameof(DisableHitbox), 0.2f);
+            Invoke(nameof(DisableHitbox), 0.2f); // Время активной фазы удара
         }
 
+        // Сброс состояния атаки
         Invoke(nameof(ResetAttackState), 0.5f);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!isAttacking) return;
+
+        // Проверка слоя врага
         if (((1 << other.gameObject.layer) & enemyLayer) == 0) return;
 
         EnemyDarya enemyScript = other.GetComponent<EnemyDarya>();
@@ -147,9 +159,13 @@ public class Katana : MonoBehaviour
         damagedEnemies.Clear();
     }
 
+    // Визуализация радиуса атаки в редакторе
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange * 2);
     }
 }

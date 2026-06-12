@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1678631001004523965}
@@ -61,7 +61,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -80,9 +80,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 904896381
+  m_SortingLayer: 4
+  m_SortingOrder: 100
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3114738102144766914, guid: 07a0954a1397bf2428e04221150b5e08, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -104,7 +104,7 @@ Animator:
   m_GameObject: {fileID: 1862220758136860177}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b824eef3c85c18d4b9c3027960d22cd1, type: 2}
+  m_Controller: {fileID: 9100000, guid: e5ba42f88bf27d94f87be4f1ab2b9f23, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -128,11 +128,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da93b13e0df5b75478738d2c4cdc2af4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gun
-  muzzle: {fileID: 4064873687251165965, guid: afce892c17f1a274d9933e823f4f085b, type: 3}
-  muzzlePosition: {fileID: 1678631001004523965}
-  projectile: {fileID: 5464031615217692297, guid: 5bfeb6c0c62e8f1408d0bd4a80aabc2f, type: 3}
+  muzzleEffect: {fileID: 4064873687251165965, guid: afce892c17f1a274d9933e823f4f085b, type: 3}
+  muzzlePoint: {fileID: 1678631001004523965}
+  projectilePrefab: {fileID: 5464031615217692297, guid: 5bfeb6c0c62e8f1408d0bd4a80aabc2f, type: 3}
   fireDistance: 10
   fireRate: 0.2
+  bulletSpeed: 15
+  weaponOffset: {x: 0.3, y: 0.15}
 --- !u!1 &6287977056332644187
 GameObject:
   m_ObjectHideFlags: 0
