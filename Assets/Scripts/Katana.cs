@@ -5,11 +5,12 @@ public class Katana : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform playerTransform;
-    [SerializeField] private Transform katanaPivot; // Точка, вокруг которой вращается меч
+    [SerializeField] private Transform katanaPivot;
 
     [Header("Combat")]
     [SerializeField] private float attackRange = 3.5f;
-    [SerializeField] private int damage = 10;
+    // Базовый урон теперь берется из PlayerDarya, но можно оставить как запасной вариант
+    [SerializeField] private int fallbackDamage = 10;
     [SerializeField] private float attackCooldown = 0.8f;
     [SerializeField] private LayerMask enemyLayer;
 
@@ -21,9 +22,11 @@ public class Katana : MonoBehaviour
     private bool isAttacking;
     private HashSet<EnemyDarya> damagedEnemies = new HashSet<EnemyDarya>();
 
+    // Кэш ссылки на игрока, чтобы не искать его каждый удар
+    private PlayerDarya cachedPlayer;
+
     private void Start()
     {
-        // Инициализация коллайдера
         if (hitCollider != null)
         {
             hitCollider.enabled = false;
@@ -40,25 +43,24 @@ public class Katana : MonoBehaviour
 
         timeSinceLastAttack = attackCooldown;
 
-        // Авто-поиск игрока
         if (playerTransform == null && transform.parent != null)
             playerTransform = transform.parent;
 
-        // Авто-поиск пивота
         if (katanaPivot == null)
             katanaPivot = transform;
+
+        // Находим игрока один раз при старте
+        cachedPlayer = FindObjectOfType<PlayerDarya>();
     }
 
     private void Update()
     {
         timeSinceLastAttack += Time.deltaTime;
 
-        // Вращаемся к врагу только если НЕ атакуем
         if (!isAttacking)
         {
             RotateTowardsNearestEnemy();
 
-            // Проверяем, можно ли атаковать
             if (timeSinceLastAttack >= attackCooldown && HasEnemyInRange())
             {
                 Attack();
@@ -78,7 +80,6 @@ public class Katana : MonoBehaviour
 
     private void RotateTowardsNearestEnemy()
     {
-        // Ищем врагов в увеличенном радиусе, чтобы меч "смотрел" на них заранее
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange * 2, enemyLayer);
         Transform closest = null;
         float minDist = Mathf.Infinity;
@@ -100,13 +101,10 @@ public class Katana : MonoBehaviour
         {
             Vector2 dir = (closest.position - katanaPivot.position).normalized;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-            // Вращаем именно пивот, а не сам спрайт меча (если они разделены)
             katanaPivot.localRotation = Quaternion.Euler(0, 0, angle);
         }
         else if (katanaPivot != null)
         {
-            // Возврат в нейтральное положение
             katanaPivot.localRotation = Quaternion.identity;
         }
     }
@@ -120,30 +118,40 @@ public class Katana : MonoBehaviour
         if (anim != null)
             anim.SetTrigger("Attack");
 
-        // Включаем хитбокс на короткое время
         if (hitCollider != null)
         {
             hitCollider.enabled = true;
-            Invoke(nameof(DisableHitbox), 0.2f); // Время активной фазы удара
+            Invoke(nameof(DisableHitbox), 0.2f);
         }
 
-        // Сброс состояния атаки
         Invoke(nameof(ResetAttackState), 0.5f);
+
+        // Убрали ошибочный код отсюда
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!isAttacking) return;
 
-        // Проверка слоя врага
         if (((1 << other.gameObject.layer) & enemyLayer) == 0) return;
 
         EnemyDarya enemyScript = other.GetComponent<EnemyDarya>();
         if (enemyScript != null && !damagedEnemies.Contains(enemyScript))
         {
-            enemyScript.TakeDamage(damage);
+            // --- ИСПРАВЛЕННАЯ ЛОГИКА УРОНА ---
+            int finalDamage = fallbackDamage; // Значение по умолчанию
+
+            if (cachedPlayer != null)
+            {
+                // Берем текущий урон игрока с учетом баффов
+                finalDamage = Mathf.RoundToInt(cachedPlayer.CurrentDamage);
+            }
+
+            enemyScript.TakeDamage(finalDamage);
             damagedEnemies.Add(enemyScript);
-            Debug.Log($"[Katana] HIT {other.name} for {damage} dmg!");
+
+            Debug.Log($"[Katana] HIT {other.name} for {finalDamage} dmg!");
+            // --------------------------------
         }
     }
 
@@ -159,7 +167,6 @@ public class Katana : MonoBehaviour
         damagedEnemies.Clear();
     }
 
-    // Визуализация радиуса атаки в редакторе
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

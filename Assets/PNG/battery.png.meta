@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b86487ba5b9be904ead0c574421ed503
+guid: 25b211e4c24f9fb4a81075c0041960f1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5587124563336528128
-    second: katana_0
+      213: 5856981904466133357
+    second: battery_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: katana_0
+      name: battery_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 121
-        height: 128
-      alignment: 9
-      pivot: {x: 0.19885184, y: 0.18944111}
+        width: 128
+        height: 121
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 00188814034798d40800000000000000
-      internalID: 5587124563336528128
+      spriteID: d61489fa20e284150800000000000000
+      internalID: 5856981904466133357
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: deadeee8f0e5b6b4981b94803fc26dfe
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      katana_0: 5587124563336528128
+      battery_0: 5856981904466133357
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
