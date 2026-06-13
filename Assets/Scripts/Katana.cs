@@ -5,20 +5,25 @@ public class Katana : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private Transform katanaPivot;
 
     [Header("Combat")]
     [SerializeField] private float attackRange = 3.5f;
-    [SerializeField] private int damage = 10;
+    // Базовый урон теперь берется из PlayerDarya, но можно оставить как запасной вариант
+    [SerializeField] private int fallbackDamage = 10;
     [SerializeField] private float attackCooldown = 0.8f;
     [SerializeField] private LayerMask enemyLayer;
 
-    [Header("Visuals")]
+    [Header("Visuals & Physics")]
     [SerializeField] private Animator anim;
     [SerializeField] private Collider2D hitCollider;
 
     private float timeSinceLastAttack;
-    private bool isAttacking = false;
+    private bool isAttacking;
     private HashSet<EnemyDarya> damagedEnemies = new HashSet<EnemyDarya>();
+
+    // Кэш ссылки на игрока, чтобы не искать его каждый удар
+    private PlayerDarya cachedPlayer;
 
     private void Start()
     {
@@ -26,17 +31,26 @@ public class Katana : MonoBehaviour
         {
             hitCollider.enabled = false;
             if (!hitCollider.isTrigger)
-                Debug.LogError("[Katana] HitCollider MUST be a Trigger!");
+            {
+                Debug.LogWarning("[Katana] HitCollider should be a Trigger! Fixing...");
+                hitCollider.isTrigger = true;
+            }
         }
         else
         {
-            Debug.LogError("[Katana] HitCollider NOT assigned! Add a Collider2D with IsTrigger and assign it.");
+            Debug.LogError("[Katana] HitCollider NOT assigned! Add a Collider2D with IsTrigger.");
         }
 
         timeSinceLastAttack = attackCooldown;
 
         if (playerTransform == null && transform.parent != null)
             playerTransform = transform.parent;
+
+        if (katanaPivot == null)
+            katanaPivot = transform;
+
+        // Находим игрока один раз при старте
+        cachedPlayer = FindObjectOfType<PlayerDarya>();
     }
 
     private void Update()
@@ -44,12 +58,13 @@ public class Katana : MonoBehaviour
         timeSinceLastAttack += Time.deltaTime;
 
         if (!isAttacking)
+        {
             RotateTowardsNearestEnemy();
 
-        if (!isAttacking && timeSinceLastAttack >= attackCooldown)
-        {
-            if (HasEnemyInRange())
+            if (timeSinceLastAttack >= attackCooldown && HasEnemyInRange())
+            {
                 Attack();
+            }
         }
     }
 
@@ -82,15 +97,15 @@ public class Katana : MonoBehaviour
             }
         }
 
-        if (closest != null)
+        if (closest != null && katanaPivot != null)
         {
-            Vector2 dir = (closest.position - transform.position).normalized;
+            Vector2 dir = (closest.position - katanaPivot.position).normalized;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            transform.localRotation = Quaternion.Euler(0, 0, angle);
+            katanaPivot.localRotation = Quaternion.Euler(0, 0, angle);
         }
-        else
+        else if (katanaPivot != null)
         {
-            transform.localRotation = Quaternion.identity;
+            katanaPivot.localRotation = Quaternion.identity;
         }
     }
 
@@ -102,8 +117,6 @@ public class Katana : MonoBehaviour
 
         if (anim != null)
             anim.SetTrigger("Attack");
-        else
-            Debug.LogWarning("[Katana] Animator not assigned!");
 
         if (hitCollider != null)
         {
@@ -112,19 +125,33 @@ public class Katana : MonoBehaviour
         }
 
         Invoke(nameof(ResetAttackState), 0.5f);
+
+        // Убрали ошибочный код отсюда
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!isAttacking) return;
+
         if (((1 << other.gameObject.layer) & enemyLayer) == 0) return;
 
         EnemyDarya enemyScript = other.GetComponent<EnemyDarya>();
         if (enemyScript != null && !damagedEnemies.Contains(enemyScript))
         {
-            enemyScript.TakeDamage(damage);
+            // --- ИСПРАВЛЕННАЯ ЛОГИКА УРОНА ---
+            int finalDamage = fallbackDamage; // Значение по умолчанию
+
+            if (cachedPlayer != null)
+            {
+                // Берем текущий урон игрока с учетом баффов
+                finalDamage = Mathf.RoundToInt(cachedPlayer.CurrentDamage);
+            }
+
+            enemyScript.TakeDamage(finalDamage);
             damagedEnemies.Add(enemyScript);
-            Debug.Log($"[Katana] HIT {other.name} for {damage} dmg!");
+
+            Debug.Log($"[Katana] HIT {other.name} for {finalDamage} dmg!");
+            // --------------------------------
         }
     }
 
@@ -144,5 +171,8 @@ public class Katana : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange * 2);
     }
 }
