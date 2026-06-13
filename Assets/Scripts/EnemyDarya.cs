@@ -27,7 +27,7 @@ public class EnemyDarya : MonoBehaviour
         }
     }
 
-    // ВАЖНО: Движение перенесено в FixedUpdate для корректной физики
+
     void FixedUpdate()
     {
         if (isDead || player == null || rb == null) return;

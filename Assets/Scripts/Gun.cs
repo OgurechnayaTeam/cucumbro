@@ -71,27 +71,22 @@ public class Gun : MonoBehaviour
     /// </summary>
     private void AimAt(Vector2 targetPosition)
     {
-        // 1. Вычисляем направление к цели
+
         Vector2 direction = targetPosition - (Vector2)transform.position;
         float idealAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        // 2. ОПРЕДЕЛЯЕМ БАЗОВОЕ НАПРАВЛЕНИЕ ИГРОКА
         Transform playerRoot = transform.root;
         bool playerFacingLeft = playerRoot.localScale.x < 0;
 
         // Базовый угол: 0° если вправо, 180° если влево
         float baseAngle = playerFacingLeft ? 180f : 0f;
 
-        // 3. ОГРАНИЧИВАЕМ УГОЛ НАКЛОНА (±60 градусов от горизонтали)
-        // Это ключевой момент! Пистолет может смотреть вверх/вниз, 
-        // но никогда не выйдет за пределы "безопасной зоны" и не перевернется.
-        // Можешь менять 60f на 45f или 70f по вкусу.
+
         float clampedAngle = Mathf.Clamp(idealAngle, baseAngle - 60f, baseAngle + 60f);
 
-        // 4. Применяем безопасный поворот
+        // Применяем безопасный поворот
         transform.localRotation = Quaternion.Euler(0, 0, clampedAngle);
 
-        // 5. КОРРЕКЦИЯ СПРАЙТА (flipX)
         // Логика остается прежней: флипаем, если направления игрока и дула не совпадают
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null)
@@ -103,7 +98,6 @@ public class Gun : MonoBehaviour
             sr.flipX = shouldFlip;
         }
 
-        // 6. ФИКСАЦИЯ MUZZLE
         // При ограниченном угле дуло остается стабильным. 
         // Просто возвращаем его в исходную локальную позицию.
         if (muzzle != null)
@@ -134,8 +128,6 @@ public class Gun : MonoBehaviour
             // Для кинематики используем MovePosition или просто задаем velocity (работает и так)
             rb.linearVelocity = shootDirection * bulletSpeed;
 
-            // ВАЖНО: Игнорируем коллизии с игроком и его частями
-            // Замени "Player" на название слоя, где стоит твой персонаж
             int playerLayer = LayerMask.NameToLayer("Default"); // Или "Player", если создал такой слой
             Physics2D.IgnoreLayerCollision(rb.gameObject.layer, playerLayer, true);
 

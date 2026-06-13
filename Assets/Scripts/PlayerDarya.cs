@@ -110,9 +110,6 @@ public class PlayerDarya : MonoBehaviour
         );
     }
 
-    // ==========================================
-    // СИСТЕМА ЗДОРОВЬЯ
-    // ==========================================
     #region Health Methods
 
     public void AddHealth(int amount)
@@ -143,14 +140,12 @@ public class PlayerDarya : MonoBehaviour
     private void Die()
     {
         Debug.Log("[Player] Игрок погиб!");
-        // TODO: Добавить логику смерти (анимация, рестарт сцены)
+
     }
 
     #endregion
 
-    // ==========================================
-    // СИСТЕМА ЩИТА
-    // ==========================================
+
     #region Shield Methods
 
     /// <summary>
@@ -178,9 +173,7 @@ public class PlayerDarya : MonoBehaviour
 
     #endregion
 
-    // ==========================================
-    // СИСТЕМА УРОНА (БАФФЫ)
-    // ==========================================
+
     #region Damage Methods
 
     /// <summary>

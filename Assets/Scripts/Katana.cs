@@ -9,7 +9,6 @@ public class Katana : MonoBehaviour
 
     [Header("Combat")]
     [SerializeField] private float attackRange = 3.5f;
-    // Базовый урон теперь берется из PlayerDarya, но можно оставить как запасной вариант
     [SerializeField] private int fallbackDamage = 10;
     [SerializeField] private float attackCooldown = 0.8f;
     [SerializeField] private LayerMask enemyLayer;
@@ -138,7 +137,6 @@ public class Katana : MonoBehaviour
         EnemyDarya enemyScript = other.GetComponent<EnemyDarya>();
         if (enemyScript != null && !damagedEnemies.Contains(enemyScript))
         {
-            // --- ИСПРАВЛЕННАЯ ЛОГИКА УРОНА ---
             int finalDamage = fallbackDamage; // Значение по умолчанию
 
             if (cachedPlayer != null)
@@ -151,7 +149,7 @@ public class Katana : MonoBehaviour
             damagedEnemies.Add(enemyScript);
 
             Debug.Log($"[Katana] HIT {other.name} for {finalDamage} dmg!");
-            // --------------------------------
+
         }
     }
 
