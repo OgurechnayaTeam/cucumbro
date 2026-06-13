@@ -53,6 +53,9 @@ TagManager:
   - name: Gun
     uniqueID: 2391949803
     locked: 0
+  - name: Weapon
+    uniqueID: 904896381
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []

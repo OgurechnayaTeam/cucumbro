@@ -188,7 +188,8 @@ Transform:
   m_LocalPosition: {x: -0.3503245, y: 0.36275357, z: 0}
   m_LocalScale: {x: -0.5354189, y: 0.4919287, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7515309838693462209}
   m_Father: {fileID: 2369893137068927766}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 5.512}
 --- !u!212 &1321403359643241153
@@ -250,6 +251,37 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
+--- !u!1 &2849751742054452015
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7515309838693462209}
+  m_Layer: 0
+  m_Name: LeftHandSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7515309838693462209
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2849751742054452015}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.62, y: -1.7, z: 0}
+  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8525741864828050161}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4217794961734143129
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,11 +566,11 @@ GameObject:
   - component: {fileID: 5545594251680633591}
   - component: {fileID: 6170302694827828976}
   - component: {fileID: 272911660177643535}
-  - component: {fileID: 8665909165165819340}
   - component: {fileID: 4985873489385658940}
-  - component: {fileID: 3478149959556849871}
+  - component: {fileID: 3491885460499264824}
+  - component: {fileID: 8579328995488727426}
   m_Layer: 0
-  m_Name: Player
+  m_Name: PlayerDarya
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -607,22 +639,8 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!114 &8665909165165819340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8346628276484770278}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d836817b90eec54aabbe578e0f8200a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player
-  moveSpeed: 6
-  moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!61 &4985873489385658940
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -669,7 +687,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &3478149959556849871
+--- !u!114 &3491885460499264824
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -683,5 +701,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponManager
   randomSelection: 1
   defaultWeaponIndex: 0
-  weaponPrefabs: []
-  rightHandSlot: {fileID: 0}
+  weaponPrefabs:
+  - {fileID: 6332991391130001960, guid: af733a62ad0999d4285c28f084fbeb8a, type: 3}
+  - {fileID: 1862220758136860177, guid: 9d577642d585e6545b70217d00c286ca, type: 3}
+  leftHandSlot: {fileID: 7515309838693462209}
+--- !u!114 &8579328995488727426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8346628276484770278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9ae486d71263ca44b6aac1d0d53dc75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDarya
+  moveSpeed: 6
+  moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  maxHealth: 100
+  currentHealth: 0
+  baseDamage: 10
+  damageMultiplier: 1
+  defaultBuffDuration: 10
+  isShieldActive: 0
+  defaultShieldDuration: 5
