@@ -44,6 +44,9 @@ TagManager:
   - name: Player
     uniqueID: 2380528551
     locked: 0
+  - name: Brutal_garlic
+    uniqueID: 3712363241
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []
