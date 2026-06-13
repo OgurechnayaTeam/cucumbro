@@ -15,7 +15,7 @@ public class DungeonGenerator2D : MonoBehaviour
     {
         public Vector2Int gridPosition;
         public Vector2 size;
-        public Vector3 worldPosition;
+        public Vector3 localPosition;
     }
 
     [Header("Generation")]
@@ -23,9 +23,10 @@ public class DungeonGenerator2D : MonoBehaviour
     [SerializeField] private bool useRandomSeed = true;
     [SerializeField] private int seed = 1;
     [SerializeField] private int roomCount = 8;
-    [SerializeField] private Vector2Int minRoomSize = new Vector2Int(8, 6);
-    [SerializeField] private Vector2Int maxRoomSize = new Vector2Int(14, 10);
-    [SerializeField] private float roomGap = 2f;
+    [SerializeField] private Vector2Int minRoomSize = new Vector2Int(3, 3);
+    [SerializeField] private Vector2Int maxRoomSize = new Vector2Int(6, 5);
+    [SerializeField] private float roomGap = 1f;
+    [SerializeField] private float roomPadding = 0.1f;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject startRoomPrefab;
@@ -33,14 +34,25 @@ public class DungeonGenerator2D : MonoBehaviour
     [SerializeField] private GameObject doorPrefab;
     [SerializeField] private GameObject exitPrefab;
 
-    [Header("Parents")]
-    [SerializeField] private Transform roomParent;
-    [SerializeField] private Transform doorParent;
+    [Header("Parent")]
+    [SerializeField] private Transform dungeonParent;
+    [SerializeField] private string dungeonObjectName = "Generated Dungeon";
 
     private readonly List<GameObject> spawnedObjects = new List<GameObject>();
     private readonly List<RoomData> generatedRooms = new List<RoomData>();
+    private GameObject currentDungeonObject;
+    private Transform currentDungeonTransform;
 
     public IReadOnlyList<GameObject> SpawnedObjects => spawnedObjects;
+    public bool GenerateOnStart
+    {
+        get => generateOnStart;
+        set => generateOnStart = value;
+    }
+
+    public int CurrentGeneratedLevel { get; private set; } = 1;
+    public Vector3 StartRoomCenter { get; private set; } = Vector3.zero;
+    public bool HasGeneratedDungeon => generatedRooms.Count > 0;
 
     private void Start()
     {
@@ -51,15 +63,35 @@ public class DungeonGenerator2D : MonoBehaviour
     [ContextMenu("Generate Dungeon")]
     public void Generate()
     {
+        CurrentGeneratedLevel = 1;
+        Generate(roomCount);
+    }
+
+    public void GenerateForLevel(int levelNumber)
+    {
+        GenerateForLevel(levelNumber, roomCount);
+    }
+
+    public void GenerateForLevel(int levelNumber, int roomsToGenerate)
+    {
+        CurrentGeneratedLevel = Mathf.Max(1, levelNumber);
+        Generate(roomsToGenerate);
+    }
+
+    private void Generate(int roomsToGenerate)
+    {
         Clear();
 
         if (!useRandomSeed)
-            Random.InitState(seed);
+            Random.InitState(seed + CurrentGeneratedLevel - 1);
 
-        int roomsToGenerate = Mathf.Max(1, roomCount);
+        roomsToGenerate = Mathf.Max(1, roomsToGenerate);
+        CreateDungeonParent(GetScreenCenterWorldPosition());
+
         Dictionary<Vector2Int, RoomData> occupiedRooms = new Dictionary<Vector2Int, RoomData>();
         Vector2Int currentGridPosition = Vector2Int.zero;
         RoomData startRoom = CreateRoomData(currentGridPosition, Vector3.zero);
+        StartRoomCenter = currentDungeonTransform.TransformPoint(startRoom.localPosition);
 
         generatedRooms.Add(startRoom);
         occupiedRooms.Add(currentGridPosition, startRoom);
@@ -69,11 +101,13 @@ public class DungeonGenerator2D : MonoBehaviour
 
         for (int i = 1; i < roomsToGenerate; i++)
         {
-            RoomData previousRoom = PickRoomWithFreeDirection(occupiedRooms);
-            Direction direction = PickFreeDirection(previousRoom.gridPosition, occupiedRooms);
-            currentGridPosition = previousRoom.gridPosition + DirectionToGridOffset(direction);
+            if (!TryCreateConnectedRoom(occupiedRooms, out RoomData previousRoom, out RoomData room, out Direction direction))
+            {
+                Debug.LogWarning($"Dungeon generation stopped at {generatedRooms.Count} rooms because no non-overlapping room position was found.");
+                break;
+            }
 
-            RoomData room = CreateConnectedRoom(previousRoom, currentGridPosition, direction);
+            currentGridPosition = room.gridPosition;
             generatedRooms.Add(room);
             occupiedRooms.Add(currentGridPosition, room);
 
@@ -88,6 +122,14 @@ public class DungeonGenerator2D : MonoBehaviour
     [ContextMenu("Clear Dungeon")]
     public void Clear()
     {
+        if (currentDungeonObject != null)
+        {
+            if (Application.isPlaying)
+                Destroy(currentDungeonObject);
+            else
+                DestroyImmediate(currentDungeonObject);
+        }
+
         for (int i = spawnedObjects.Count - 1; i >= 0; i--)
         {
             if (spawnedObjects[i] == null)
@@ -101,18 +143,20 @@ public class DungeonGenerator2D : MonoBehaviour
 
         spawnedObjects.Clear();
         generatedRooms.Clear();
+        currentDungeonObject = null;
+        currentDungeonTransform = null;
     }
 
     private RoomData CreateConnectedRoom(RoomData previousRoom, Vector2Int gridPosition, Direction direction)
     {
-        RoomData room = CreateRoomData(gridPosition, previousRoom.worldPosition);
-        Vector3 offset = DirectionToWorldOffset(direction, previousRoom.size, room.size);
-        room.worldPosition = previousRoom.worldPosition + offset;
+        RoomData room = CreateRoomData(gridPosition, previousRoom.localPosition);
+        Vector3 offset = DirectionToLocalOffset(direction, previousRoom.size, room.size);
+        room.localPosition = previousRoom.localPosition + offset;
 
         return room;
     }
 
-    private RoomData CreateRoomData(Vector2Int gridPosition, Vector3 worldPosition)
+    private RoomData CreateRoomData(Vector2Int gridPosition, Vector3 localPosition)
     {
         int width = Random.Range(minRoomSize.x, maxRoomSize.x + 1);
         int height = Random.Range(minRoomSize.y, maxRoomSize.y + 1);
@@ -121,15 +165,15 @@ public class DungeonGenerator2D : MonoBehaviour
         {
             gridPosition = gridPosition,
             size = new Vector2(width, height),
-            worldPosition = worldPosition
+            localPosition = localPosition
         };
     }
 
     private void SpawnRoom(RoomData room, bool isStartRoom)
     {
         GameObject prefab = isStartRoom && startRoomPrefab != null ? startRoomPrefab : GetRandomRoomPrefab();
-        GameObject roomObject = Spawn(prefab, room.worldPosition, Quaternion.identity, roomParent, isStartRoom ? "Start Room" : "Room");
-        roomObject.transform.localScale = new Vector3(room.size.x, room.size.y, 1f);
+        GameObject roomObject = Spawn(prefab, room.localPosition, Quaternion.identity, isStartRoom ? "Start Room" : "Room");
+        FitRoomToSize(roomObject, room.size);
     }
 
     private void SpawnDoor(RoomData fromRoom, RoomData toRoom, Direction direction)
@@ -139,27 +183,54 @@ public class DungeonGenerator2D : MonoBehaviour
             ? Quaternion.identity
             : Quaternion.Euler(0f, 0f, 90f);
 
-        Spawn(doorPrefab, doorPosition, doorRotation, doorParent, "Door");
+        Spawn(doorPrefab, doorPosition, doorRotation, "Door");
     }
 
     private void SpawnLevelExit(RoomData room, Direction exitDirection)
     {
         Vector3 exitPosition = GetWallPosition(room, exitDirection);
-        Spawn(exitPrefab, exitPosition, Quaternion.identity, doorParent, "Level Exit");
+        Spawn(exitPrefab, exitPosition, Quaternion.identity, "Level Exit");
     }
 
-    private GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent, string fallbackName)
+    private GameObject Spawn(GameObject prefab, Vector3 localPosition, Quaternion localRotation, string fallbackName)
     {
         GameObject instance = prefab != null
-            ? Instantiate(prefab, position, rotation, parent)
+            ? Instantiate(prefab, currentDungeonTransform)
             : new GameObject(fallbackName);
 
-        instance.transform.SetParent(parent);
-        instance.transform.SetPositionAndRotation(position, rotation);
+        instance.transform.SetParent(currentDungeonTransform, false);
+        instance.transform.SetLocalPositionAndRotation(localPosition, localRotation);
         instance.name = fallbackName;
         spawnedObjects.Add(instance);
 
         return instance;
+    }
+
+    private void CreateDungeonParent(Vector3 position)
+    {
+        currentDungeonObject = new GameObject($"{dungeonObjectName} {CurrentGeneratedLevel}");
+        currentDungeonTransform = currentDungeonObject.transform;
+        currentDungeonTransform.SetParent(dungeonParent);
+        currentDungeonTransform.SetPositionAndRotation(position, Quaternion.identity);
+    }
+
+    private Vector3 GetScreenCenterWorldPosition()
+    {
+        Camera camera = Camera.main;
+
+        if (camera == null)
+            return Vector3.zero;
+
+        if (camera.orthographic)
+            return new Vector3(camera.transform.position.x, camera.transform.position.y, 0f);
+
+        Plane worldPlane = new Plane(Vector3.forward, Vector3.zero);
+        Ray centerRay = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+
+        if (worldPlane.Raycast(centerRay, out float distance))
+            return centerRay.GetPoint(distance);
+
+        return Vector3.zero;
     }
 
     private GameObject GetRandomRoomPrefab()
@@ -168,6 +239,103 @@ public class DungeonGenerator2D : MonoBehaviour
             return null;
 
         return roomPrefabs[Random.Range(0, roomPrefabs.Length)];
+    }
+
+    private bool TryCreateConnectedRoom(
+        Dictionary<Vector2Int, RoomData> occupiedRooms,
+        out RoomData previousRoom,
+        out RoomData room,
+        out Direction direction)
+    {
+        const int maxAttempts = 100;
+
+        previousRoom = default;
+        room = default;
+        direction = Direction.Right;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            previousRoom = PickRoomWithFreeDirection(occupiedRooms);
+            direction = PickFreeDirection(previousRoom.gridPosition, occupiedRooms);
+            Vector2Int gridPosition = previousRoom.gridPosition + DirectionToGridOffset(direction);
+
+            if (occupiedRooms.ContainsKey(gridPosition))
+                continue;
+
+            room = CreateConnectedRoom(previousRoom, gridPosition, direction);
+
+            if (!OverlapsExistingRoom(room))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool OverlapsExistingRoom(RoomData candidate)
+    {
+        foreach (RoomData existingRoom in generatedRooms)
+        {
+            if (RoomsOverlap(candidate, existingRoom))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool RoomsOverlap(RoomData a, RoomData b)
+    {
+        float maxDistanceX = (a.size.x + b.size.x) * 0.5f + roomPadding;
+        float maxDistanceY = (a.size.y + b.size.y) * 0.5f + roomPadding;
+
+        return Mathf.Abs(a.localPosition.x - b.localPosition.x) < maxDistanceX
+            && Mathf.Abs(a.localPosition.y - b.localPosition.y) < maxDistanceY;
+    }
+
+    private void FitRoomToSize(GameObject roomObject, Vector2 targetSize)
+    {
+        if (!TryGetObjectBounds(roomObject, out Bounds bounds)
+            || bounds.size.x <= Mathf.Epsilon
+            || bounds.size.y <= Mathf.Epsilon)
+        {
+            roomObject.transform.localScale = new Vector3(targetSize.x, targetSize.y, roomObject.transform.localScale.z);
+            return;
+        }
+
+        Vector3 localScale = roomObject.transform.localScale;
+        roomObject.transform.localScale = new Vector3(
+            localScale.x * targetSize.x / bounds.size.x,
+            localScale.y * targetSize.y / bounds.size.y,
+            localScale.z);
+    }
+
+    private bool TryGetObjectBounds(GameObject gameObject, out Bounds bounds)
+    {
+        Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length > 0)
+        {
+            bounds = renderers[0].bounds;
+
+            for (int i = 1; i < renderers.Length; i++)
+                bounds.Encapsulate(renderers[i].bounds);
+
+            return true;
+        }
+
+        Collider2D[] colliders = gameObject.GetComponentsInChildren<Collider2D>();
+
+        if (colliders.Length > 0)
+        {
+            bounds = colliders[0].bounds;
+
+            for (int i = 1; i < colliders.Length; i++)
+                bounds.Encapsulate(colliders[i].bounds);
+
+            return true;
+        }
+
+        bounds = default;
+        return false;
     }
 
     private RoomData PickRoomWithFreeDirection(Dictionary<Vector2Int, RoomData> occupiedRooms)
@@ -219,7 +387,7 @@ public class DungeonGenerator2D : MonoBehaviour
             case Direction.Left:
                 return wallPosition + new Vector3(-roomGap * 0.5f, 0f, 0f);
             default:
-                return (fromRoom.worldPosition + toRoom.worldPosition) * 0.5f;
+                return (fromRoom.localPosition + toRoom.localPosition) * 0.5f;
         }
     }
 
@@ -228,15 +396,15 @@ public class DungeonGenerator2D : MonoBehaviour
         switch (direction)
         {
             case Direction.Up:
-                return room.worldPosition + new Vector3(0f, room.size.y * 0.5f, 0f);
+                return room.localPosition + new Vector3(0f, room.size.y * 0.5f, 0f);
             case Direction.Right:
-                return room.worldPosition + new Vector3(room.size.x * 0.5f, 0f, 0f);
+                return room.localPosition + new Vector3(room.size.x * 0.5f, 0f, 0f);
             case Direction.Down:
-                return room.worldPosition + new Vector3(0f, -room.size.y * 0.5f, 0f);
+                return room.localPosition + new Vector3(0f, -room.size.y * 0.5f, 0f);
             case Direction.Left:
-                return room.worldPosition + new Vector3(-room.size.x * 0.5f, 0f, 0f);
+                return room.localPosition + new Vector3(-room.size.x * 0.5f, 0f, 0f);
             default:
-                return room.worldPosition;
+                return room.localPosition;
         }
     }
 
@@ -251,7 +419,7 @@ public class DungeonGenerator2D : MonoBehaviour
         return false;
     }
 
-    private Vector3 DirectionToWorldOffset(Direction direction, Vector2 fromSize, Vector2 toSize)
+    private Vector3 DirectionToLocalOffset(Direction direction, Vector2 fromSize, Vector2 toSize)
     {
         switch (direction)
         {
@@ -289,6 +457,7 @@ public class DungeonGenerator2D : MonoBehaviour
     {
         roomCount = Mathf.Max(1, roomCount);
         roomGap = Mathf.Max(0f, roomGap);
+        roomPadding = Mathf.Max(0f, roomPadding);
 
         minRoomSize.x = Mathf.Max(1, minRoomSize.x);
         minRoomSize.y = Mathf.Max(1, minRoomSize.y);

@@ -9,12 +9,22 @@ public class LevelManager : MonoBehaviour
     {
         public string levelName = "Wave";
         public float duration = 30f;
+        public int dungeonRoomCount;
     }
 
     [Header("Levels")]
     [SerializeField] private List<LevelSettings> levels = new List<LevelSettings>();
     [SerializeField] private float timeBetweenLevels = 5f;
     [SerializeField] private bool startOnAwake = true;
+
+    [Header("Dungeon")]
+    [SerializeField] private DungeonGenerator2D dungeonGenerator;
+    [SerializeField] private bool generateDungeonOnLevelStart = true;
+
+    [Header("Player")]
+    [SerializeField] private Transform playerTransform;
+    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private bool spawnPlayerInStartRoom = true;
 
     private int currentLevelIndex;
     private float levelTimer;
@@ -29,6 +39,11 @@ public class LevelManager : MonoBehaviour
     {
         if (levels.Count == 0)
             CreateDefaultLevels();
+
+        ResolveDungeonGenerator();
+
+        if (generateDungeonOnLevelStart && dungeonGenerator != null)
+            dungeonGenerator.GenerateOnStart = false;
     }
 
     private void Start()
@@ -90,6 +105,8 @@ public class LevelManager : MonoBehaviour
         levelRunning = true;
 
         Debug.Log($"Starting level {CurrentLevel}: {level.levelName}");
+        GenerateDungeonForLevel(level);
+        SpawnPlayerInStartRoom();
         StartEnemiesForLevel(level);
     }
 
@@ -115,10 +132,66 @@ public class LevelManager : MonoBehaviour
         // enemyManager.StartLevel(CurrentLevel, level);
     }
 
+    private void GenerateDungeonForLevel(LevelSettings level)
+    {
+        if (!generateDungeonOnLevelStart)
+            return;
+
+        ResolveDungeonGenerator();
+
+        if (dungeonGenerator == null)
+        {
+            Debug.LogWarning("LevelManager could not find a DungeonGenerator2D for level generation.");
+            return;
+        }
+
+        if (level.dungeonRoomCount > 0)
+            dungeonGenerator.GenerateForLevel(CurrentLevel, level.dungeonRoomCount);
+        else
+            dungeonGenerator.GenerateForLevel(CurrentLevel);
+    }
+
     private void StopEnemiesForLevel()
     {
         // EnemyManager interaction placeholder:
         // enemyManager.StopLevel();
+    }
+
+    private void SpawnPlayerInStartRoom()
+    {
+        if (!spawnPlayerInStartRoom)
+            return;
+
+        ResolveDungeonGenerator();
+
+        if (dungeonGenerator == null || !dungeonGenerator.HasGeneratedDungeon)
+        {
+            Debug.LogWarning("LevelManager could not spawn the player because no generated start room exists.");
+            return;
+        }
+
+        ResolvePlayer();
+
+        if (playerTransform == null)
+        {
+            if (playerPrefab == null)
+            {
+                Debug.LogWarning("LevelManager could not find a player to spawn and no player prefab is assigned.");
+                return;
+            }
+
+            GameObject player = Instantiate(playerPrefab);
+            player.name = playerPrefab.name;
+            playerTransform = player.transform;
+        }
+
+        Vector3 spawnPosition = dungeonGenerator.StartRoomCenter;
+        spawnPosition.z = playerTransform.position.z;
+        playerTransform.position = spawnPosition;
+
+        Rigidbody2D playerRigidbody = playerTransform.GetComponent<Rigidbody2D>();
+        if (playerRigidbody != null)
+            playerRigidbody.linearVelocity = Vector2.zero;
     }
 
     private void StopLevelRoutine()
@@ -128,6 +201,29 @@ public class LevelManager : MonoBehaviour
 
         StopCoroutine(levelRoutine);
         levelRoutine = null;
+    }
+
+    private void ResolveDungeonGenerator()
+    {
+        if (dungeonGenerator == null)
+            dungeonGenerator = FindAnyObjectByType<DungeonGenerator2D>();
+    }
+
+    private void ResolvePlayer()
+    {
+        if (playerTransform != null)
+            return;
+
+        GameObject taggedPlayer = GameObject.FindGameObjectWithTag("Player");
+        if (taggedPlayer != null)
+        {
+            playerTransform = taggedPlayer.transform;
+            return;
+        }
+
+        GameObject namedPlayer = GameObject.Find("Player");
+        if (namedPlayer != null)
+            playerTransform = namedPlayer.transform;
     }
 
     private void CreateDefaultLevels()
@@ -158,6 +254,7 @@ public class LevelManager : MonoBehaviour
         foreach (LevelSettings level in levels)
         {
             level.duration = Mathf.Max(1f, level.duration);
+            level.dungeonRoomCount = Mathf.Max(0, level.dungeonRoomCount);
         }
     }
 }
