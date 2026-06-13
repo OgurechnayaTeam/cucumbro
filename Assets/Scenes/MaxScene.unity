@@ -260,6 +260,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2963658997820414509, guid: 61ec5512c7c0c40b783b8884597f86fa, type: 3}
+      propertyPath: m_Icon
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2963658997820414509, guid: 61ec5512c7c0c40b783b8884597f86fa, type: 3}
       propertyPath: m_Name
       value: Dragon_m
       objectReference: {fileID: 0}
