@@ -3,18 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Food
   - Water
   - UI
   - 
   - 
-  - 
-  - 
+  - Player
+  - Enemy
   - 
   - 
   - 
@@ -46,6 +47,11 @@ TagManager:
     locked: 0
   - name: Brutal_garlic
     uniqueID: 3712363241
+  - name: Enemy
+    uniqueID: 1154868703
+    locked: 0
+  - name: Gun
+    uniqueID: 2391949803
     locked: 0
   m_RenderingLayers:
   - Default

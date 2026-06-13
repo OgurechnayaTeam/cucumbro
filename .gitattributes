@@ -1,0 +1,73 @@
+# Default: normalize text files to LF in repo
+* text=auto eol=lf
+
+# C# / Unity text assets
+*.cs text eol=lf
+*.shader text eol=lf
+*.compute text eol=lf
+*.hlsl text eol=lf
+*.cginc text eol=lf
+*.asmdef text eol=lf
+*.asmref text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+*.uxml text eol=lf
+*.uss text eol=lf
+*.meta text eol=lf
+*.unity text eol=lf
+*.prefab text eol=lf
+*.mat text eol=lf
+*.asset text eol=lf
+*.controller text eol=lf
+*.anim text eol=lf
+*.overrideController text eol=lf
+*.physicMaterial text eol=lf
+*.physicsMaterial2D text eol=lf
+*.renderTexture text eol=lf
+*.playable text eol=lf
+*.mask text eol=lf
+*.spriteatlas text eol=lf
+
+# Visual Studio generated files
+*.sln text eol=crlf
+*.csproj text eol=crlf
+*.props text eol=crlf
+*.targets text eol=crlf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.tga binary
+*.psd binary
+*.fbx binary
+*.blend binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.mp4 binary
+*.mov binary
+*.avi binary
+*.zip binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.exe binary
+*.a binary
+*.lib binary
+*.pdb binary
+*.mdb binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+
+# Unity large/binary-ish files
+*.unitypackage binary
+*.cubemap binary
+

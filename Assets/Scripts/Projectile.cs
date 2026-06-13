@@ -2,15 +2,27 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private int damage = 10; // Урон пули
+    [SerializeField] private float lifetime = 3f; // Время жизни
+
     void Start()
     {
-        
+        // Автоматическое удаление, если пуля никуда не попала
+        Destroy(gameObject, lifetime);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        // Проверяем наличие скрипта врага напрямую, а не по тегу
+        EnemyDarya enemy = collision.gameObject.GetComponent<EnemyDarya>();
+
+        if (enemy != null)
+        {
+            enemy.TakeDamage(damage);
+            Debug.Log($"Hit Enemy! Damage: {damage}");
+        }
+
+        // Уничтожаем пулю при любом столкновении (враг или стена)
+        Destroy(gameObject);
     }
 }

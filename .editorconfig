@@ -1,0 +1,23 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,shader,compute,hlsl,cginc,asmdef,asmref,json,xml,yaml,yml,txt,md,uxml,uss}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+[*.{sln,csproj,props,targets}]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+
+[*.meta]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
