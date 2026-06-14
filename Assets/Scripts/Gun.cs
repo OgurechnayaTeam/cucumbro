@@ -2,125 +2,176 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
+    [Header("Настройки стрельбы")]
+    [SerializeField] private float fireRate = 0.30f;       // Частота выстрелов (меньше = быстрее)
+    [SerializeField] private Transform muzzle;             // Точка вылета пули (дочерний объект)
+    [SerializeField] private GameObject projectilePrefab;  // Префаб пули
+    [SerializeField] private float bulletSpeed = 20f;      // Скорость полета пули
 
-    [Header("Prefabs")]
-    [SerializeField] GameObject muzzle;
-    [SerializeField] Transform muzzlePosition;
-    [SerializeField] GameObject projectile;
+    [Header("Визуальные эффекты")]
+    [SerializeField] private GameObject muzzleFlashPrefab; // Префаб вспышки из ствола
+    [SerializeField] private Animator gunAnimator;         // Аниматор пистолета (назначается в Inspector)
+    [SerializeField] private string shootAnimTrigger = "Fire"; // Название триггера в аниматоре
 
-    [Header("Config")]
-    [SerializeField] float fireDistance = 10;
-    [SerializeField] float fireRate = 0.5f;
+    [Header("Поиск цели")]
+    [SerializeField] private LayerMask enemyLayer;         // Слой врагов (Enemy)
+    [SerializeField] private float detectionRadius = 15f;  // Радиус обнаружения
 
-    Transform player;
-    Vector2 offset;
+    // Внутренние переменные
+    private float nextFireTime;
+    private Vector3 originalLocalMuzzleOffset; // Запоминаем правильное положение дула
 
-    private float timeSinceLastShot = 0f;
-    Transform closestEnemy;
-    Animator anim;
-
-
-    private void Start()
+    void Awake()
     {
-        anim = GetComponent<Animator>();
-        timeSinceLastShot = fireRate;
-        player = GameObject.Find("Player").transform;
-
-        SetOffset(new Vector2(1, 0.5f));
-
-    }
-
-    private void Update()
-    {
-
-        transform.localPosition = offset;
-
-        FindClosestEnemy();
-        AimAtEnemy();
-        Shooting();
-    }
-
-    void Shooting()
-    {
-        // Если врага нет или он слишком далеко — выходим
-        if (closestEnemy == null || Vector2.Distance(transform.position, closestEnemy.position) > fireDistance)
-            return;
-
-        // Таймер перезарядки
-        timeSinceLastShot += Time.deltaTime;
-
-        if (timeSinceLastShot >= fireRate)
+        // При старте запоминаем, где находится дуло относительно центра пистолета
+        if (muzzle != null)
         {
-            Shoot(); 
-            timeSinceLastShot = 0f;
+            originalLocalMuzzleOffset = muzzle.localPosition;
         }
+
+        // Убрали автоматический поиск аниматора — он назначается только вручную в Inspector
     }
 
-    void FindClosestEnemy()
+    void Update()
     {
-        closestEnemy = null;
-        float closestDistance = Mathf.Infinity;
+        // Проверяем, можно ли стрелять прямо сейчас
+        if (Time.time < nextFireTime) return;
 
-        EnemyDarya[] enemies = FindObjectsOfType<EnemyDarya>();
+        // 1. Ищем ближайшего врага в радиусе
+        Collider2D closestEnemy = null;
+        float closestDist = Mathf.Infinity;
 
-        foreach (EnemyDarya enemy in enemies)
+        var hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius, enemyLayer);
+
+        foreach (var hit in hits)
         {
-            float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance <= fireDistance)
+            float dist = Vector2.Distance(transform.position, hit.transform.position);
+            if (dist < closestDist)
             {
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestEnemy = enemy.transform;
-                }
+                closestDist = dist;
+                closestEnemy = hit;
             }
         }
-    }
 
-    void AimAtEnemy()
-    {
+        // 2. Если враг найден — прицеливаемся и стреляем
         if (closestEnemy != null)
         {
-            Vector3 direction = closestEnemy.position - transform.position;
-            direction.Normalize();
+            AimAt(closestEnemy.transform.position);
+            Fire(closestEnemy.transform.position);
+            PlayShootEffects(); // <-- Запускаем анимацию и вспышку
 
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle);
-        }
-        else
-        {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            // Обновляем таймер перезарядки
+            nextFireTime = Time.time + fireRate;
         }
     }
 
-
-    void Shoot()
+    /// <summary>
+    /// Поворачивает пистолет к цели и фиксирует позицию дула, 
+    /// чтобы оно не смещалось из-за зеркального отражения родителя (игрока).
+    /// </summary>
+    private void AimAt(Vector2 targetPosition)
     {
-        // Эффект вспышки
-        var muzzleGo = Instantiate(muzzle, muzzlePosition.position, transform.rotation);
-        muzzleGo.transform.SetParent(transform);
-        Destroy(muzzleGo, 0.1f);
+        // 1. Вычисляем направление к цели
+        Vector2 direction = targetPosition - (Vector2)transform.position;
+        float idealAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        // Создание снаряда
-        var projectileGo = Instantiate(projectile, muzzlePosition.position, transform.rotation);
+        // 2. ОПРЕДЕЛЯЕМ БАЗОВОЕ НАПРАВЛЕНИЕ ИГРОКА
+        Transform playerRoot = transform.root;
+        bool playerFacingLeft = playerRoot.localScale.x < 0;
 
-        Rigidbody2D bulletRb = projectileGo.GetComponent<Rigidbody2D>();
-        if (bulletRb != null)
+        // Базовый угол: 0° если вправо, 180° если влево
+        float baseAngle = playerFacingLeft ? 180f : 0f;
+
+        // 3. ОГРАНИЧИВАЕМ УГОЛ НАКЛОНА (±60 градусов от горизонтали)
+        // Это ключевой момент! Пистолет может смотреть вверх/вниз, 
+        // но никогда не выйдет за пределы "безопасной зоны" и не перевернется.
+        // Можешь менять 60f на 45f или 70f по вкусу.
+        float clampedAngle = Mathf.Clamp(idealAngle, baseAngle - 60f, baseAngle + 60f);
+
+        // 4. Применяем безопасный поворот
+        transform.localRotation = Quaternion.Euler(0, 0, clampedAngle);
+
+        // 5. КОРРЕКЦИЯ СПРАЙТА (flipX)
+        // Логика остается прежней: флипаем, если направления игрока и дула не совпадают
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
         {
-            bulletRb.linearVelocity = transform.right * fireDistance;
+            bool gunFacingLeft = (clampedAngle > 90f && clampedAngle < 270f) ||
+                                 (clampedAngle < -90f);
+
+            bool shouldFlip = (playerFacingLeft != gunFacingLeft);
+            sr.flipX = shouldFlip;
         }
 
-        Destroy(projectileGo, 3f);
-
-        if (anim != null)
+        // 6. ФИКСАЦИЯ MUZZLE
+        // При ограниченном угле дуло остается стабильным. 
+        // Просто возвращаем его в исходную локальную позицию.
+        if (muzzle != null)
         {
-            anim.SetTrigger("Fire"); 
+            muzzle.localPosition = originalLocalMuzzleOffset;
         }
     }
 
-    public void SetOffset(Vector2 o)
+    private void Fire(Vector2 targetPosition)
     {
-        offset = o;
+        if (projectilePrefab == null || muzzle == null) return;
+
+        // 1. Вычисляем направление ОТ дула К цели
+        Vector2 shootDirection = ((Vector2)targetPosition - (Vector2)muzzle.position).normalized;
+
+        // 2. Создаем пулю СМЕЩЕННОЙ вперед на 0.1 единицы, чтобы она не появилась внутри пистолета
+        Vector3 spawnPos = muzzle.position + (Vector3)(shootDirection * 0.1f);
+
+        // 3. Поворот пули должен совпадать с направлением стрельбы
+        float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
+        Quaternion spawnRot = Quaternion.Euler(0, 0, angle);
+
+        var bullet = Instantiate(projectilePrefab, spawnPos, spawnRot);
+
+        var rb = bullet.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            // Для кинематики используем MovePosition или просто задаем velocity (работает и так)
+            rb.linearVelocity = shootDirection * bulletSpeed;
+
+            // ВАЖНО: Игнорируем коллизии с игроком и его частями
+            // Замени "Player" на название слоя, где стоит твой персонаж
+            int playerLayer = LayerMask.NameToLayer("Default"); // Или "Player", если создал такой слой
+            Physics2D.IgnoreLayerCollision(rb.gameObject.layer, playerLayer, true);
+
+            // Замораживаем вращение, чтобы пуля летела ровно
+            rb.freezeRotation = true;
+        }
     }
+
+    /// <summary>
+    /// Запускает визуальные эффекты выстрела: анимацию отдачи и вспышку.
+    /// </summary>
+    private void PlayShootEffects()
+    {
+        // 1. Запуск анимации стрельбы (триггер "Fire")
+        if (gunAnimator != null && !string.IsNullOrEmpty(shootAnimTrigger))
+        {
+            gunAnimator.SetTrigger(shootAnimTrigger);
+        }
+
+        // 2. Создание вспышки (Muzzle Flash)
+        if (muzzleFlashPrefab != null && muzzle != null)
+        {
+            // Спавним вспышку в точке дула с тем же поворотом, что и у пистолета
+            var flash = Instantiate(muzzleFlashPrefab, muzzle.position, transform.rotation);
+
+            // Автоматически удаляем вспышку через короткое время (0.05 сек), чтобы она не висела в воздухе
+            Destroy(flash, 0.05f);
+        }
+    }
+
+    // Визуализация радиуса поиска в редакторе (желтый круг)
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+    }
+
 
 }
