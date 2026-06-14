@@ -35,6 +35,7 @@ public class ShieldPickup : MonoBehaviour
         if (rb != null)
         {
             rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.gravityScale = 0f;
             rb.freezeRotation = true;
         }
     }

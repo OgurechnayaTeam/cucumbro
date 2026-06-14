@@ -33,6 +33,8 @@ public class PlayerAnn : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
         anim = GetComponent<Animator>();
         if (threeQuarterSprite != null)
             threeQuarterOriginalScale = threeQuarterSprite.transform.localScale;

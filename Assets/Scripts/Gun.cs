@@ -15,7 +15,8 @@ public class Gun : MonoBehaviour
 
     [Header("Поиск цели")]
     [SerializeField] private LayerMask enemyLayer;         // Слой врагов (Enemy)
-    [SerializeField] private float detectionRadius = 15f;  // Радиус обнаружения
+    [SerializeField] private LayerMask wallLayer;          // Слой стен (Wall)
+    [SerializeField] private float detectionRadius = 10f;  // Радиус обнаружения
 
     // Внутренние переменные
     private float nextFireTime;
@@ -37,23 +38,8 @@ public class Gun : MonoBehaviour
         // Проверяем, можно ли стрелять прямо сейчас
         if (Time.time < nextFireTime) return;
 
-        // 1. Ищем ближайшего врага в радиусе
-        Collider2D closestEnemy = null;
-        float closestDist = Mathf.Infinity;
+        Collider2D closestEnemy = FindClosestVisibleEnemy();
 
-        var hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius, enemyLayer);
-
-        foreach (var hit in hits)
-        {
-            float dist = Vector2.Distance(transform.position, hit.transform.position);
-            if (dist < closestDist)
-            {
-                closestDist = dist;
-                closestEnemy = hit;
-            }
-        }
-
-        // 2. Если враг найден — прицеливаемся и стреляем
         if (closestEnemy != null)
         {
             AimAt(closestEnemy.transform.position);
@@ -63,6 +49,49 @@ public class Gun : MonoBehaviour
             // Обновляем таймер перезарядки
             nextFireTime = Time.time + fireRate;
         }
+    }
+
+    private Collider2D FindClosestVisibleEnemy()
+    {
+        Collider2D closestEnemy = null;
+        float closestDist = Mathf.Infinity;
+        Vector2 origin = muzzle != null ? muzzle.position : transform.position;
+
+        var hits = Physics2D.OverlapCircleAll(origin, detectionRadius, enemyLayer);
+
+        foreach (var hit in hits)
+        {
+            if (hit.isTrigger)
+                continue;
+
+            Vector2 target = hit.bounds.center;
+            float dist = Vector2.Distance(origin, target);
+
+            if (dist > detectionRadius || dist >= closestDist || !HasDirectVisibility(origin, target, dist))
+                continue;
+
+            closestDist = dist;
+            closestEnemy = hit;
+        }
+
+        return closestEnemy;
+    }
+
+    private bool HasDirectVisibility(Vector2 origin, Vector2 target, float distance)
+    {
+        int effectiveWallLayer = wallLayer.value;
+        if (effectiveWallLayer == 0)
+        {
+            int wallLayerIndex = LayerMask.NameToLayer("Wall");
+            if (wallLayerIndex >= 0)
+                effectiveWallLayer = 1 << wallLayerIndex;
+        }
+
+        if (effectiveWallLayer == 0)
+            return true;
+
+        Vector2 direction = (target - origin).normalized;
+        return Physics2D.Raycast(origin, direction, distance, effectiveWallLayer).collider == null;
     }
 
     /// <summary>
@@ -131,16 +160,21 @@ public class Gun : MonoBehaviour
         var rb = bullet.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
+            int projectileLayer = LayerMask.NameToLayer("Projectile");
+            if (projectileLayer >= 0)
+                rb.gameObject.layer = projectileLayer;
+
+            rb.gravityScale = 0f;
+            rb.freezeRotation = true;
+
             // Для кинематики используем MovePosition или просто задаем velocity (работает и так)
             rb.linearVelocity = shootDirection * bulletSpeed;
 
             // ВАЖНО: Игнорируем коллизии с игроком и его частями
-            // Замени "Player" на название слоя, где стоит твой персонаж
-            int playerLayer = LayerMask.NameToLayer("Default"); // Или "Player", если создал такой слой
-            Physics2D.IgnoreLayerCollision(rb.gameObject.layer, playerLayer, true);
+            int playerLayer = LayerMask.NameToLayer("Player");
+            if (playerLayer >= 0)
+                Physics2D.IgnoreLayerCollision(rb.gameObject.layer, playerLayer, true);
 
-            // Замораживаем вращение, чтобы пуля летела ровно
-            rb.freezeRotation = true;
         }
     }
 

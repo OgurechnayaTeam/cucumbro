@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7775249168528707059}
   - component: {fileID: 4660454293362375082}
   - component: {fileID: 2492369314431281361}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Battery
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,8 +175,8 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_AngularDamping: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2

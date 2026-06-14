@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6053454938856740715}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   m_Component:
   - component: {fileID: 74082604396181985}
   - component: {fileID: 5146756019652776561}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: faceAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,7 +135,7 @@ GameObject:
   m_Component:
   - component: {fileID: 820213068587655034}
   - component: {fileID: 318446958768855757}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: hand_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -226,7 +226,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7876253378613279498}
   - component: {fileID: 5730275302873972629}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: leg_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -318,7 +318,7 @@ GameObject:
   - component: {fileID: 1113111074215805197}
   - component: {fileID: 8343317269962373060}
   - component: {fileID: 3179080533114390443}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Brutal_garlic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -334,9 +334,9 @@ Transform:
   m_GameObject: {fileID: 2927140043557071605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.01, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7343687990876981630}
   - {fileID: 820213068587655034}
@@ -382,8 +382,8 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_AngularDamping: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -394,7 +394,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!1 &3487898507035202468
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,7 +405,7 @@ GameObject:
   m_Component:
   - component: {fileID: 976198016656634124}
   - component: {fileID: 117163563713110976}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: hand_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -496,7 +496,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1100819032992401393}
   - component: {fileID: 8417119593398552157}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: hand_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -587,7 +587,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7343687990876981630}
   - component: {fileID: 8326698327230265103}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: body_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -678,7 +678,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8693536627270224582}
   - component: {fileID: 156636357419553500}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: hand_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -769,7 +769,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2817499062212397802}
   - component: {fileID: 8955916276936108101}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: leg_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
