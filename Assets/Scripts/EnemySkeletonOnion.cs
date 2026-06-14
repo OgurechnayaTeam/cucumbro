@@ -1,171 +1,169 @@
 using System.Collections;
 using UnityEngine;
-
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
 public class EnemySkeletonOnionEnemy : MonoBehaviour
 {
-    [Header("Movement")]
+    [Header("Config")]
     public float moveSpeed = 2f;
-    public float noticeRange = 5f;
-    public float attackRange = 1.5f;
-
-    [Header("Combat")]
-    public int maxHealth = 50;
-    public int currentHealth;
-    public float attackCooldown = 1f;
-    public int attackDamage = 10;
+    public int maxHealth = 3;
+    public float damageCooldown = 0.5f;
 
     [Header("Death Effect")]
-    public float deathFadeDuration = 1.5f;
-    public float hitFlashDuration = 0.15f;
+    [Tooltip("Скорость мигания при смерти")]
+    public float flashSpeed = 8f;
+    [Tooltip("Количество миганий перед исчезновением")]
+    public int flashCount = 6;
+    [Tooltip("Время перед началом исчезновения")]
+    public float deathDelay = 0.5f;
+    [Tooltip("Цвет свечения при смерти")]
+    public Color glowColor = new Color(1f, 0.9f, 0.7f, 1f);
 
-    private Transform player;
-    private Animator animator;
-    private SpriteRenderer spriteRenderer;
-    private Rigidbody2D rb;
-    private float lastAttackTime;
-    private bool isAttacking = false;
+    [Header("References")]
+    public Transform player;
+
+    private int currentHealth;
+    private float lastDamageTime = -999f;
     private bool isDead = false;
-
-    void Awake()
-    {
-        // Добавляем только Rigidbody2D (без коллайдера!)
-        rb = GetComponent<Rigidbody2D>();
-        if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0f;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-            rb.bodyType = RigidbodyType2D.Kinematic; // KINEMATIC - лучший вариант для простого движения
-            Debug.Log("Added Rigidbody2D (Kinematic)");
-        }
-    }
+    private Rigidbody2D rb;
+    private Animator anim;
+    private SpriteRenderer spriteRenderer;
+    private Collider2D enemyCollider;
 
     void Start()
     {
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-        if (playerObject != null)
-        {
-            player = playerObject.transform;
-        }
-
-        animator = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         currentHealth = maxHealth;
-    }
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        enemyCollider = GetComponent<Collider2D>();
 
-    void Update()
-    {
-        if (isDead || player == null) return;
-
-        float distance = Vector2.Distance(transform.position, player.position);
-
-        // Анимации
-        if (animator != null)
+        if (player == null)
         {
-            animator.SetFloat("distanceToPlayer", distance);
-            bool notice = distance <= noticeRange;
-            animator.SetBool("isNotice", notice);
-        }
-
-        // Атака
-        if (distance <= attackRange && Time.time >= lastAttackTime + attackCooldown && !isAttacking && !isDead)
-        {
-            StartCoroutine(AttackRoutine());
+            GameObject playerObj = GameObject.Find("Player");
+            if (playerObj != null)
+                player = playerObj.transform;
         }
     }
 
     void FixedUpdate()
     {
-        if (isDead || player == null || isAttacking) return;
+        if (isDead || player == null || rb == null) return;
 
-        float distance = Vector2.Distance(transform.position, player.position);
-        bool notice = distance <= noticeRange;
+        // Движение к игроку
+        Vector2 direction = (player.position - transform.position).normalized;
+        rb.linearVelocity = direction * moveSpeed;
 
-        if (notice && !isAttacking)
+        // Поворот лицом к игроку
+        if (direction.x != 0)
         {
-            Vector2 direction = (player.position - transform.position).normalized;
-
-            // ДЛЯ KINEMATIC Rigidbody2D:
-            rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
-
-            // ИЛИ для DYNAMIC Rigidbody2D (раскомментировать):
-            // rb.linearVelocity = direction * moveSpeed;
-
-            // Поворот спрайта
-            if (direction.x != 0)
+            float scaleX = transform.localScale.x;
+            if ((direction.x > 0 && scaleX < 0) || (direction.x < 0 && scaleX > 0))
             {
-                Vector3 scale = transform.localScale;
-                scale.x = Mathf.Abs(scale.x) * (direction.x > 0 ? 1 : -1);
-                transform.localScale = scale;
+                transform.localScale = new Vector3(-scaleX, transform.localScale.y, transform.localScale.z);
             }
+        }
+
+        // Обновление анимации
+        if (anim != null)
+        {
+            anim.SetFloat("moveSpeed", Mathf.Abs(direction.magnitude));
         }
     }
 
-    IEnumerator AttackRoutine()
+    public void TakeDamage(int amount)
     {
-        isAttacking = true;
-        if (animator != null) animator.SetBool("isAttack", true);
-        lastAttackTime = Time.time;
+        if (isDead || Time.time - lastDamageTime < damageCooldown)
+            return;
 
-        if (rb != null) rb.linearVelocity = Vector2.zero;
+        currentHealth -= amount;
+        lastDamageTime = Time.time;
 
-        yield return new WaitForSeconds(0.3f);
+        Debug.Log($"SkeletonOnionEnemy took {amount} damage. Health: {currentHealth}/{maxHealth}");
 
-        // Урон игроку
-        //if (player != null)
-        //{
-        //    PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-        //    if (playerHealth != null) playerHealth.TakeDamage(attackDamage);
-        //}
-
-        yield return new WaitForSeconds(0.5f);
-
-        isAttacking = false;
-        if (animator != null) animator.SetBool("isAttack", false);
-    }
-
-    public void TakeDamage(int damage)
-    {
-        if (isDead) return;
-        currentHealth -= damage;
-        StartCoroutine(FlashRed());
-
-        if (currentHealth <= 0) Die();
-    }
-
-    IEnumerator FlashRed()
-    {
-        if (spriteRenderer != null)
+        // Визуальный эффект получения урона
+        if (spriteRenderer != null && !isDead)
         {
-            Color original = spriteRenderer.color;
             spriteRenderer.color = Color.red;
-            yield return new WaitForSeconds(hitFlashDuration);
-            spriteRenderer.color = original;
+            Invoke(nameof(ResetColor), 0.1f);
+        }
+
+        if (currentHealth <= 0)
+        {
+            Die();
         }
     }
 
     void Die()
     {
         if (isDead) return;
+
         isDead = true;
 
-        if (rb != null) rb.simulated = false;
-        StartCoroutine(DeathEffect());
-    }
+        // Отключаем коллайдер и физику
+        if (enemyCollider != null)
+            enemyCollider.enabled = false;
 
-    IEnumerator DeathEffect()
-    {
-        float elapsed = 0f;
-        Color originalColor = spriteRenderer.color;
-
-        while (elapsed < deathFadeDuration)
+        if (rb != null)
         {
-            elapsed += Time.deltaTime;
-            float alpha = Mathf.Lerp(1f, 0f, elapsed / deathFadeDuration);
-            spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-            yield return null;
+            rb.linearVelocity = Vector2.zero;
+            rb.simulated = false;
         }
 
+        // Возвращаемся в Idle анимацию
+        if (anim != null)
+        {
+            anim.SetFloat("moveSpeed", 0);
+            // Убедимся, что триггеры сброшены
+            anim.ResetTrigger("Attack");
+            anim.ResetTrigger("Run");
+        }
+
+        // Запускаем корутину смерти
+        StartCoroutine(DeathSequence());
+    }
+
+    IEnumerator DeathSequence()
+    {
+        // Ждем немного перед началом эффекта
+        yield return new WaitForSeconds(deathDelay);
+
+        // Эффект мигания/свечения
+        Color originalColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
+        float flashDuration = 1f / flashSpeed;
+
+        for (int i = 0; i < flashCount; i++)
+        {
+            if (spriteRenderer != null)
+            {
+                // Свечение
+                spriteRenderer.color = glowColor;
+                yield return new WaitForSeconds(flashDuration);
+
+                // Исчезновение
+                spriteRenderer.color = Color.clear;
+                yield return new WaitForSeconds(flashDuration);
+            }
+        }
+
+        // Финальное исчезновение
+        if (spriteRenderer != null)
+            spriteRenderer.color = originalColor;
+
+        // Уничтожаем объект
         Destroy(gameObject);
+    }
+
+    void ResetColor()
+    {
+        if (spriteRenderer != null && !isDead)
+            spriteRenderer.color = Color.white;
+    }
+
+    // Визуальный эффект в редакторе
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, 0.5f);
     }
 }
