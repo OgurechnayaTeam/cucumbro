@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6708506015543720977}
   - component: {fileID: 2744789607789341738}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: LegL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 330333869794817645}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.813, y: -0.178, z: 0}
+  m_LocalPosition: {x: 0.005, y: -0.178, z: 0}
   m_LocalScale: {x: 0.4546618, y: 0.45466185, z: 0.4546618}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -101,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9196475315335800816}
   - component: {fileID: 3091793324132625895}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: LegR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ Transform:
   m_GameObject: {fileID: 384325283381010702}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.927, y: -0.192, z: 0}
+  m_LocalPosition: {x: -0.109, y: -0.192, z: 0}
   m_LocalScale: {x: 0.4546618, y: 0.45466185, z: 0.4546618}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -170,7 +170,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 865648847531821248, guid: a87e814be4215fe4a8e183a8a5e9774b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -192,9 +192,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5429122686679915127}
   - component: {fileID: 2309610363388510163}
-  - component: {fileID: -7549696814871184368}
-  - component: {fileID: -4195800504033372071}
-  m_Layer: 9
+  - component: {fileID: 3842903505596027725}
+  - component: {fileID: 4689289767359793600}
+  m_Layer: 0
   m_Name: SkeletonOnionEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,7 +239,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!50 &-7549696814871184368
+--- !u!50 &3842903505596027725
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0
@@ -253,8 +253,8 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0
-  m_GravityScale: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -265,8 +265,8 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
---- !u!114 &-4195800504033372071
+  m_Constraints: 0
+--- !u!114 &4689289767359793600
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -275,14 +275,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2630336883880741162}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9158c3ef430b6b4c938cce985cf3fdb, type: 3}
+  m_Script: {fileID: 11500000, guid: 3a9013c2a18936e4484ccc695221318f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyDarya
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySkeletonOnionEnemy
   moveSpeed: 2
   maxHealth: 3
-  damageCooldown: 0.2
-  contactDamage: 10
-  contactDamageCooldown: 1
+  damageCooldown: 0.5
+  flashSpeed: 8
+  flashCount: 6
+  deathDelay: 0.5
+  glowColor: {r: 1, g: 0.9, b: 0.7, a: 1}
   player: {fileID: 0}
 --- !u!1 &2749167724618661471
 GameObject:
@@ -294,7 +296,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3086669117250365165}
   - component: {fileID: 5679761897725980953}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: ArmR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -310,7 +312,7 @@ Transform:
   m_GameObject: {fileID: 2749167724618661471}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.981, y: 0.056, z: 0}
+  m_LocalPosition: {x: -0.163, y: 0.056, z: 0}
   m_LocalScale: {x: 0.3913842, y: 0.39138424, z: 0.3913842}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -385,7 +387,7 @@ GameObject:
   m_Component:
   - component: {fileID: 82918141831183732}
   - component: {fileID: 9004990040838905720}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -401,7 +403,7 @@ Transform:
   m_GameObject: {fileID: 5502475905770770050}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.818, y: 0.159, z: 0}
+  m_LocalPosition: {x: 0, y: 0.159, z: 0}
   m_LocalScale: {x: 0.4629, y: 0.4629, z: 0.4629}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -476,7 +478,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1956612921104156165}
   - component: {fileID: 7282336742845968312}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: ArmL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -492,7 +494,7 @@ Transform:
   m_GameObject: {fileID: 5908480487050065682}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.754, y: 0.048, z: 0}
+  m_LocalPosition: {x: 0.064, y: 0.048, z: 0}
   m_LocalScale: {x: 0.3913842, y: 0.3913842, z: 0.3913842}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -566,7 +568,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2332501921235874446}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: SOE_threeOnFour
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -604,7 +606,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5825589113916467923}
   - component: {fileID: 1881586606580245152}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -620,7 +622,7 @@ Transform:
   m_GameObject: {fileID: 8871503396258482335}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.866, y: 0.014, z: 0}
+  m_LocalPosition: {x: -0.048, y: 0.014, z: 0}
   m_LocalScale: {x: 0.440268, y: 0.44026798, z: 0.440268}
   m_ConstrainProportionsScale: 0
   m_Children: []
