@@ -3,7 +3,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [SerializeField] private int damage = 10;
-    [SerializeField] private float lifetime = 3f;
+    [SerializeField] private float lifetime = 1f;
 
     // Ссылка на того, кто выстрелил (чтобы не убить себя)
     private Transform shooterTransform;
@@ -25,13 +25,32 @@ public class Projectile : MonoBehaviour
         if (collision.transform.root == shooterTransform) return;
 
         // 3. НАНОСИМ УРОН ВРАГУ
-        EnemyDarya enemy = collision.gameObject.GetComponent<EnemyDarya>();
-        if (enemy != null)
-        {
-            enemy.TakeDamage(damage);
-        }
+        DealDamage(collision.gameObject);
 
         // 4. УНИЧТОЖАЕМ ПУЛЮ ПРИ ПОПАДАНИИ В ЛЮБОЙ ТВЕРДЫЙ ОБЪЕКТ
         Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.transform.root == shooterTransform) return;
+
+        DealDamage(other.gameObject);
+
+        Destroy(gameObject);
+    }
+
+    private void DealDamage(GameObject target)
+    {
+        EnemyDarya enemyDarya = target.GetComponentInParent<EnemyDarya>();
+        if (enemyDarya != null)
+        {
+            enemyDarya.TakeDamage(damage);
+            return;
+        }
+
+        Enemy enemy = target.GetComponentInParent<Enemy>();
+        if (enemy != null)
+            enemy.TakeDamage(damage);
     }
 }

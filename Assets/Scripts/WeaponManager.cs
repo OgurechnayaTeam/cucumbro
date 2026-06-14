@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 public class WeaponManager : MonoBehaviour
 {
+    public enum PlayerClass
+    {
+        Katana = 0,
+        Gun = 1
+    }
+
     [Header("Настройки выбора")]
     public bool randomSelection = true; // Если false, выберется оружие по индексу ниже
     public int defaultWeaponIndex = 0;  // Индекс оружия при ручном выборе
@@ -14,13 +20,29 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private Transform leftHandSlot;
 
     private GameObject currentWeaponInstance;
+    private bool hasStarted;
 
     void Start()
     {
+        hasStarted = true;
         SpawnSelectedWeapon();
     }
 
-    void SpawnSelectedWeapon()
+    public void SetSelectedClass(PlayerClass playerClass)
+    {
+        ChangeWeapon((int)playerClass);
+    }
+
+    public void SetSelectedWeaponIndex(int index)
+    {
+        randomSelection = false;
+        defaultWeaponIndex = index;
+
+        if (hasStarted)
+            SpawnSelectedWeapon();
+    }
+
+    private void SpawnSelectedWeapon()
     {
         if (weaponPrefabs == null || weaponPrefabs.Count == 0)
         {
@@ -57,8 +79,6 @@ public class WeaponManager : MonoBehaviour
     // Можно вызывать из UI или других скриптов для смены оружия во время игры
     public void ChangeWeapon(int index)
     {
-        randomSelection = false;
-        defaultWeaponIndex = index;
-        SpawnSelectedWeapon();
+        SetSelectedWeaponIndex(index);
     }
 }

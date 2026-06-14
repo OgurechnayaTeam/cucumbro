@@ -19,6 +19,8 @@ public class PlayerNastya : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
     }
 
     private void Update()

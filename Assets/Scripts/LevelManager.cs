@@ -14,17 +14,32 @@ public class LevelManager : MonoBehaviour
 
     [Header("Levels")]
     [SerializeField] private List<LevelSettings> levels = new List<LevelSettings>();
+    [SerializeField] private bool advanceLevelsByTimer = true;
     [SerializeField] private float timeBetweenLevels = 5f;
     [SerializeField] private bool startOnAwake = true;
 
     [Header("Dungeon")]
     [SerializeField] private DungeonGenerator2D dungeonGenerator;
+    [SerializeField] private AbstractDungeonGenerator tilemapDungeonGenerator;
     [SerializeField] private bool generateDungeonOnLevelStart = true;
 
     [Header("Player")]
     [SerializeField] private Transform playerTransform;
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private bool spawnPlayerInStartRoom = true;
+    [SerializeField] private WeaponManager.PlayerClass selectedPlayerClass = WeaponManager.PlayerClass.Katana;
+
+    [Header("Enemies")]
+    [SerializeField] private EnemyManager enemyManager;
+    [SerializeField] private bool spawnEnemiesOnLevelStart = true;
+
+    [Header("Bonus Items")]
+    [SerializeField] private BonusItemSpawner bonusItemSpawner;
+    [SerializeField] private bool spawnBonusItemsOnLevelStart = true;
+
+    [Header("Scene UI")]
+    [SerializeField] private UIManager uiManager;
+    [SerializeField] private CameraFollowPlayer cameraFollowPlayer;
 
     private int currentLevelIndex;
     private float levelTimer;
@@ -41,6 +56,9 @@ public class LevelManager : MonoBehaviour
             CreateDefaultLevels();
 
         ResolveDungeonGenerator();
+        ResolveEnemyManager();
+        ResolveBonusItemSpawner();
+        ResolveSceneBindings();
 
         if (generateDungeonOnLevelStart && dungeonGenerator != null)
             dungeonGenerator.GenerateOnStart = false;
@@ -57,8 +75,10 @@ public class LevelManager : MonoBehaviour
         if (!levelRunning)
             return;
 
-        LevelSettings level = levels[currentLevelIndex];
+        if (!advanceLevelsByTimer)
+            return;
 
+        LevelSettings level = levels[currentLevelIndex];
         levelTimer -= Time.deltaTime;
 
         if (levelTimer <= 0f)
@@ -69,6 +89,20 @@ public class LevelManager : MonoBehaviour
     {
         currentLevelIndex = 0;
         StartCurrentLevel();
+    }
+
+    public void StartRun(WeaponManager.PlayerClass playerClass)
+    {
+        selectedPlayerClass = playerClass;
+        StartRun();
+    }
+
+    public void SetPlayerClass(WeaponManager.PlayerClass playerClass)
+    {
+        selectedPlayerClass = playerClass;
+
+        if (playerTransform != null)
+            ApplySelectedWeapon(playerTransform);
     }
 
     public void RestartRun()
@@ -107,6 +141,7 @@ public class LevelManager : MonoBehaviour
         Debug.Log($"Starting level {CurrentLevel}: {level.levelName}");
         GenerateDungeonForLevel(level);
         SpawnPlayerInStartRoom();
+        SpawnBonusItemsForLevel(level);
         StartEnemiesForLevel(level);
     }
 
@@ -115,6 +150,7 @@ public class LevelManager : MonoBehaviour
         levelRunning = false;
         Debug.Log($"Level {CurrentLevel} complete.");
         StopEnemiesForLevel();
+        ClearBonusItemsForLevel();
 
         currentLevelIndex++;
         levelRoutine = StartCoroutine(StartNextLevelAfterDelay());
@@ -128,8 +164,47 @@ public class LevelManager : MonoBehaviour
 
     private void StartEnemiesForLevel(LevelSettings level)
     {
-        // EnemyManager interaction placeholder:
-        // enemyManager.StartLevel(CurrentLevel, level);
+        if (!spawnEnemiesOnLevelStart)
+            return;
+
+        ResolveEnemyManager();
+
+        if (enemyManager == null)
+        {
+            Debug.LogWarning("LevelManager could not create an EnemyManager for enemy spawning.");
+            return;
+        }
+
+        if (tilemapDungeonGenerator == null || !tilemapDungeonGenerator.HasGeneratedDungeon)
+        {
+            Debug.LogWarning("LevelManager could not spawn enemies because no tilemap dungeon room list exists.");
+            return;
+        }
+
+        enemyManager.SpawnEnemies(tilemapDungeonGenerator.Rooms, tilemapDungeonGenerator, playerTransform);
+        HandleEnemyCountChanged(enemyManager.AliveEnemyCount);
+    }
+
+    private void SpawnBonusItemsForLevel(LevelSettings level)
+    {
+        if (!spawnBonusItemsOnLevelStart)
+            return;
+
+        ResolveBonusItemSpawner();
+
+        if (bonusItemSpawner == null)
+        {
+            Debug.LogWarning("LevelManager could not create a BonusItemSpawner for item spawning.");
+            return;
+        }
+
+        if (tilemapDungeonGenerator == null || !tilemapDungeonGenerator.HasGeneratedDungeon)
+        {
+            Debug.LogWarning("LevelManager could not spawn bonus items because no tilemap dungeon room list exists.");
+            return;
+        }
+
+        bonusItemSpawner.SpawnItems(tilemapDungeonGenerator.Rooms, tilemapDungeonGenerator);
     }
 
     private void GenerateDungeonForLevel(LevelSettings level)
@@ -139,9 +214,15 @@ public class LevelManager : MonoBehaviour
 
         ResolveDungeonGenerator();
 
+        if (tilemapDungeonGenerator != null)
+        {
+            tilemapDungeonGenerator.GenerateDungeon();
+            return;
+        }
+
         if (dungeonGenerator == null)
         {
-            Debug.LogWarning("LevelManager could not find a DungeonGenerator2D for level generation.");
+            Debug.LogWarning("LevelManager could not find a dungeon generator for level generation.");
             return;
         }
 
@@ -153,8 +234,14 @@ public class LevelManager : MonoBehaviour
 
     private void StopEnemiesForLevel()
     {
-        // EnemyManager interaction placeholder:
-        // enemyManager.StopLevel();
+        if (enemyManager != null)
+            enemyManager.ClearEnemies();
+    }
+
+    private void ClearBonusItemsForLevel()
+    {
+        if (bonusItemSpawner != null)
+            bonusItemSpawner.ClearItems();
     }
 
     private void SpawnPlayerInStartRoom()
@@ -164,7 +251,10 @@ public class LevelManager : MonoBehaviour
 
         ResolveDungeonGenerator();
 
-        if (dungeonGenerator == null || !dungeonGenerator.HasGeneratedDungeon)
+        bool hasRoomDungeon = dungeonGenerator != null && dungeonGenerator.HasGeneratedDungeon;
+        bool hasTilemapDungeon = tilemapDungeonGenerator != null && tilemapDungeonGenerator.HasGeneratedDungeon;
+
+        if (!hasRoomDungeon && !hasTilemapDungeon)
         {
             Debug.LogWarning("LevelManager could not spawn the player because no generated start room exists.");
             return;
@@ -185,13 +275,27 @@ public class LevelManager : MonoBehaviour
             playerTransform = player.transform;
         }
 
-        Vector3 spawnPosition = dungeonGenerator.StartRoomCenter;
+        ApplySelectedWeapon(playerTransform);
+
+        Vector3 spawnPosition = hasTilemapDungeon
+            ? tilemapDungeonGenerator.StartRoomCenter
+            : dungeonGenerator.StartRoomCenter;
         spawnPosition.z = playerTransform.position.z;
         playerTransform.position = spawnPosition;
 
         Rigidbody2D playerRigidbody = playerTransform.GetComponent<Rigidbody2D>();
         if (playerRigidbody != null)
+        {
+            playerRigidbody.gravityScale = 0f;
+            playerRigidbody.freezeRotation = true;
             playerRigidbody.linearVelocity = Vector2.zero;
+        }
+
+        ResolveEnemyManager();
+        if (enemyManager != null)
+            enemyManager.SetPlayerTarget(playerTransform);
+
+        BindSceneObjectsToPlayer();
     }
 
     private void StopLevelRoutine()
@@ -207,6 +311,89 @@ public class LevelManager : MonoBehaviour
     {
         if (dungeonGenerator == null)
             dungeonGenerator = FindAnyObjectByType<DungeonGenerator2D>();
+
+        if (tilemapDungeonGenerator == null)
+            tilemapDungeonGenerator = FindAnyObjectByType<CorridorFirstDungeonGenerator>();
+    }
+
+    private void ResolveEnemyManager()
+    {
+        if (enemyManager != null)
+        {
+            BindEnemyManagerEvents();
+            return;
+        }
+
+        enemyManager = GetComponent<EnemyManager>();
+
+        if (enemyManager == null)
+            enemyManager = FindAnyObjectByType<EnemyManager>();
+
+        if (enemyManager == null)
+            enemyManager = gameObject.AddComponent<EnemyManager>();
+
+        BindEnemyManagerEvents();
+    }
+
+    private void BindEnemyManagerEvents()
+    {
+        if (enemyManager == null)
+            return;
+
+        enemyManager.EnemyCountChanged -= HandleEnemyCountChanged;
+        enemyManager.EnemyCountChanged += HandleEnemyCountChanged;
+    }
+
+    private void ResolveBonusItemSpawner()
+    {
+        if (bonusItemSpawner != null)
+            return;
+
+        bonusItemSpawner = GetComponent<BonusItemSpawner>();
+
+        if (bonusItemSpawner == null)
+            bonusItemSpawner = FindAnyObjectByType<BonusItemSpawner>();
+
+        if (bonusItemSpawner == null)
+            bonusItemSpawner = gameObject.AddComponent<BonusItemSpawner>();
+    }
+
+    private void ResolveSceneBindings()
+    {
+        if (uiManager == null)
+            uiManager = FindAnyObjectByType<UIManager>();
+
+        if (cameraFollowPlayer == null)
+            cameraFollowPlayer = FindAnyObjectByType<CameraFollowPlayer>();
+    }
+
+    private void BindSceneObjectsToPlayer()
+    {
+        ResolveSceneBindings();
+
+        if (uiManager != null)
+            uiManager.BindPlayer(playerTransform);
+
+        if (cameraFollowPlayer != null)
+            cameraFollowPlayer.SetTarget(playerTransform);
+    }
+
+    private void ApplySelectedWeapon(Transform player)
+    {
+        if (player == null)
+            return;
+
+        WeaponManager weaponManager = player.GetComponent<WeaponManager>();
+        if (weaponManager != null)
+            weaponManager.SetSelectedClass(selectedPlayerClass);
+    }
+
+    private void HandleEnemyCountChanged(int count)
+    {
+        ResolveSceneBindings();
+
+        if (uiManager != null)
+            uiManager.SetEnemiesCount(count);
     }
 
     private void ResolvePlayer()

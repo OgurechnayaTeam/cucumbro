@@ -1,24 +1,46 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Enemy : MonoBehaviour
 {
     [Header("Config")]
     public float moveSpeed = 2f;
     public int maxHealth = 3;
-    public float damageCooldown = 1f; // время неуязвимости после получения урона
+    public float damageCooldown = 1f; // РІСЂРµРјСЏ РЅРµСѓСЏР·РІРёРјРѕСЃС‚Рё РїРѕСЃР»Рµ РїРѕР»СѓС‡РµРЅРёСЏ СѓСЂРѕРЅР°
+    [SerializeField] private int contactDamage = 10;
+    [SerializeField] private float contactDamageCooldown = 1f;
 
     [Header("References")]
-    public Transform player; // можно назначить вручную или найти автоматически
+    public Transform player; // РјРѕР¶РЅРѕ РЅР°Р·РЅР°С‡РёС‚СЊ РІСЂСѓС‡РЅСѓСЋ РёР»Рё РЅР°Р№С‚Рё Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё
 
     private int currentHealth;
-    private float lastDamageTime = -999f; // чтобы первый удар прошёл сразу
+    private float lastDamageTime = -999f; // С‡С‚РѕР±С‹ РїРµСЂРІС‹Р№ СѓРґР°СЂ РїСЂРѕС€С‘Р» СЃСЂР°Р·Сѓ
+    private float lastPlayerDamageTime = -999f;
     private bool isDead = false;
+    private bool canMove;
+    private Rigidbody2D rb;
+
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
 
     void Start()
     {
         currentHealth = maxHealth;
+        rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+            rb = gameObject.AddComponent<Rigidbody2D>();
 
-        // Если игрок не назначен — найдём его по имени
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
+        rb.bodyType = RigidbodyType2D.Dynamic;
+
+        Collider2D enemyCollider = GetComponent<Collider2D>();
+        if (enemyCollider == null)
+            enemyCollider = gameObject.AddComponent<BoxCollider2D>();
+
+        enemyCollider.isTrigger = false;
+
+        // Р•СЃР»Рё РёРіСЂРѕРє РЅРµ РЅР°Р·РЅР°С‡РµРЅ вЂ” РЅР°Р№РґС‘Рј РµРіРѕ РїРѕ РёРјРµРЅРё
         if (player == null)
         {
             GameObject playerObj = GameObject.Find("Player");
@@ -29,15 +51,20 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        if (isDead || player == null) return;
+        if (isDead || player == null || rb == null || !canMove)
+        {
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
+            return;
+        }
 
-        // Движение к игроку
+        // Р”РІРёР¶РµРЅРёРµ Рє РёРіСЂРѕРєСѓ
         Vector2 direction = (player.position - transform.position).normalized;
-        transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
+        rb.linearVelocity = direction * moveSpeed;
 
-        // Поворот лицом к игроку (опционально)
+        // РџРѕРІРѕСЂРѕС‚ Р»РёС†РѕРј Рє РёРіСЂРѕРєСѓ (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ)
         if (direction.x != 0)
         {
             float scaleX = transform.localScale.x;
@@ -48,8 +75,21 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void SetTarget(Transform target)
+    {
+        player = target;
+    }
+
+    public void SetMovementEnabled(bool enabled)
+    {
+        canMove = enabled;
+
+        if (!canMove && rb != null)
+            rb.linearVelocity = Vector2.zero;
+    }
+
     /// <summary>
-    /// Получить урон от пули/игрока
+    /// РџРѕР»СѓС‡РёС‚СЊ СѓСЂРѕРЅ РѕС‚ РїСѓР»Рё/РёРіСЂРѕРєР°
     /// </summary>
     public void TakeDamage(int amount)
     {
@@ -61,7 +101,7 @@ public class Enemy : MonoBehaviour
 
         Debug.Log($"Enemy took {amount} damage. Health: {currentHealth}/{maxHealth}");
 
-        // Визуальный эффект попадания (можно добавить позже)
+        // Р’РёР·СѓР°Р»СЊРЅС‹Р№ СЌС„С„РµРєС‚ РїРѕРїР°РґР°РЅРёСЏ (РјРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РїРѕР·Р¶Рµ)
         // GetComponent<SpriteRenderer>().color = Color.red;
         // Invoke(nameof(ResetColor), 0.1f);
 
@@ -71,17 +111,40 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        TryDamagePlayer(collision.collider);
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        TryDamagePlayer(collision.collider);
+    }
+
+    private void TryDamagePlayer(Collider2D other)
+    {
+        if (isDead || contactDamage <= 0 || Time.time - lastPlayerDamageTime < contactDamageCooldown)
+            return;
+
+        PlayerDarya playerDarya = other.GetComponentInParent<PlayerDarya>();
+        if (playerDarya == null)
+            return;
+
+        playerDarya.TakeDamage(contactDamage);
+        lastPlayerDamageTime = Time.time;
+    }
+
     void Die()
     {
         isDead = true;
         Debug.Log("Enemy died!");
 
-        // Опционально: анимация смерти, звук, дроп предметов
-        // Destroy(gameObject, 0.5f); // удалить через полсекунды (для анимации)
-        Destroy(gameObject); // удалить сразу
+        // РћРїС†РёРѕРЅР°Р»СЊРЅРѕ: Р°РЅРёРјР°С†РёСЏ СЃРјРµСЂС‚Рё, Р·РІСѓРє, РґСЂРѕРї РїСЂРµРґРјРµС‚РѕРІ
+        // Destroy(gameObject, 0.5f); // СѓРґР°Р»РёС‚СЊ С‡РµСЂРµР· РїРѕР»СЃРµРєСѓРЅРґС‹ (РґР»СЏ Р°РЅРёРјР°С†РёРё)
+        Destroy(gameObject); // СѓРґР°Р»РёС‚СЊ СЃСЂР°Р·Сѓ
     }
 
-    // Для визуального эффекта попадания (раскомментируйте, если нужно)
+    // Р”Р»СЏ РІРёР·СѓР°Р»СЊРЅРѕРіРѕ СЌС„С„РµРєС‚Р° РїРѕРїР°РґР°РЅРёСЏ (СЂР°СЃРєРѕРјРјРµРЅС‚РёСЂСѓР№С‚Рµ, РµСЃР»Рё РЅСѓР¶РЅРѕ)
     /*
     void ResetColor()
     {

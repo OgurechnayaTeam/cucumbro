@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6708506015543720977}
   - component: {fileID: 2744789607789341738}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LegL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9196475315335800816}
   - component: {fileID: 3091793324132625895}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LegR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -192,7 +192,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5429122686679915127}
   - component: {fileID: 2309610363388510163}
-  m_Layer: 0
+  - component: {fileID: -7549696814871184368}
+  - component: {fileID: -4195800504033372071}
+  m_Layer: 9
   m_Name: SkeletonOnionEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -237,6 +239,51 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!50 &-7549696814871184368
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2630336883880741162}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!114 &-4195800504033372071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2630336883880741162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9158c3ef430b6b4c938cce985cf3fdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDarya
+  moveSpeed: 2
+  maxHealth: 3
+  damageCooldown: 0.2
+  contactDamage: 10
+  contactDamageCooldown: 1
+  player: {fileID: 0}
 --- !u!1 &2749167724618661471
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,7 +294,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3086669117250365165}
   - component: {fileID: 5679761897725980953}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ArmR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +362,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1154868703
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4596989345294535381, guid: a87e814be4215fe4a8e183a8a5e9774b, type: 3}
@@ -338,7 +385,7 @@ GameObject:
   m_Component:
   - component: {fileID: 82918141831183732}
   - component: {fileID: 9004990040838905720}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -406,7 +453,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1154868703
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7922681263002179344, guid: a87e814be4215fe4a8e183a8a5e9774b, type: 3}
@@ -429,7 +476,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1956612921104156165}
   - component: {fileID: 7282336742845968312}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ArmL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -519,7 +566,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2332501921235874446}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SOE_threeOnFour
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -557,7 +604,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5825589113916467923}
   - component: {fileID: 1881586606580245152}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -625,7 +672,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1154868703
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 5279201641325414627, guid: a87e814be4215fe4a8e183a8a5e9774b, type: 3}

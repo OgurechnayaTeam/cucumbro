@@ -50,7 +50,7 @@ public class Katana : MonoBehaviour
             katanaPivot = transform;
 
         // Находим игрока один раз при старте
-        cachedPlayer = FindObjectOfType<PlayerDarya>();
+        cachedPlayer = FindAnyObjectByType<PlayerDarya>();
     }
 
     private void Update()
@@ -73,7 +73,7 @@ public class Katana : MonoBehaviour
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange, enemyLayer);
         foreach (var hit in hits)
         {
-            if (hit.GetComponent<EnemyDarya>() != null) return true;
+            if (hit.GetComponentInParent<EnemyDarya>() != null) return true;
         }
         return false;
     }
@@ -86,14 +86,14 @@ public class Katana : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            EnemyDarya e = hit.GetComponent<EnemyDarya>();
+            EnemyDarya e = hit.GetComponentInParent<EnemyDarya>();
             if (e == null) continue;
 
-            float dist = Vector2.Distance(transform.position, hit.transform.position);
+            float dist = Vector2.Distance(transform.position, e.transform.position);
             if (dist < minDist)
             {
                 minDist = dist;
-                closest = hit.transform;
+                closest = e.transform;
             }
         }
 
@@ -135,7 +135,7 @@ public class Katana : MonoBehaviour
 
         if (((1 << other.gameObject.layer) & enemyLayer) == 0) return;
 
-        EnemyDarya enemyScript = other.GetComponent<EnemyDarya>();
+        EnemyDarya enemyScript = other.GetComponentInParent<EnemyDarya>();
         if (enemyScript != null && !damagedEnemies.Contains(enemyScript))
         {
             // --- ИСПРАВЛЕННАЯ ЛОГИКА УРОНА ---

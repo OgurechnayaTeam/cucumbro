@@ -38,6 +38,7 @@ public class PlayerDarya : MonoBehaviour
     private Vector2 movement;
     private Vector3 startingScale;
     private int facingDirection = 1;
+    private bool isDead;
 
     #region Public Properties
     /// <summary> Итоговый урон с учетом всех модификаторов </summary>
@@ -53,6 +54,12 @@ public class PlayerDarya : MonoBehaviour
     public bool IsShieldActive => isShieldActive;
 
     /// <summary> Текущее здоровье </summary>
+    public int CurrentHealth => currentHealth;
+
+    /// <summary> Максимальное здоровье </summary>
+    public int MaxHealth => maxHealth;
+
+    /// <summary> Текущее здоровье </summary>
     public int GetCurrentHealth() => currentHealth;
 
     /// <summary> Максимальное здоровье </summary>
@@ -62,6 +69,8 @@ public class PlayerDarya : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
         startingScale = transform.localScale;
         currentHealth = maxHealth;
     }
@@ -80,6 +89,9 @@ public class PlayerDarya : MonoBehaviour
 
     private void Update()
     {
+        if (isDead)
+            return;
+
         // Чтение ввода
         if (moveAction?.action != null)
             movement = moveAction.action.ReadValue<Vector2>();
@@ -98,6 +110,13 @@ public class PlayerDarya : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDead)
+        {
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         rb.linearVelocity = movement * moveSpeed;
     }
 
@@ -124,7 +143,7 @@ public class PlayerDarya : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (damage <= 0) return;
+        if (damage <= 0 || isDead) return;
 
         // Щит полностью блокирует урон
         if (isShieldActive)
@@ -142,7 +161,22 @@ public class PlayerDarya : MonoBehaviour
 
     private void Die()
     {
+        if (isDead)
+            return;
+
+        isDead = true;
+        movement = Vector2.zero;
+
+        if (rb != null)
+            rb.linearVelocity = Vector2.zero;
+
+        if (moveAction?.action != null)
+            moveAction.action.Disable();
+
         Debug.Log("[Player] Игрок погиб!");
+        UIManager uiManager = FindAnyObjectByType<UIManager>();
+        if (uiManager != null)
+            uiManager.ShowGameOver();
         // TODO: Добавить логику смерти (анимация, рестарт сцены)
     }
 

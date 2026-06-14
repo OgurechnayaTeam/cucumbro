@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1469606286329627318}
   - component: {fileID: 7100193555460409768}
   m_Layer: 5
-  m_Name: XP_Background
+  m_Name: HP_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -341,7 +341,7 @@ GameObject:
   - component: {fileID: 3178861859083326894}
   - component: {fileID: 8828507836316466178}
   m_Layer: 0
-  m_Name: Row_XP_Heart
+  m_Name: Row_HP_Heart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -543,7 +543,7 @@ GameObject:
   - component: {fileID: 6474210397453935816}
   - component: {fileID: 7150325668357931896}
   m_Layer: 5
-  m_Name: XP_Fill
+  m_Name: HP_Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -684,10 +684,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b62432fdeda7dd9458515b01acf3d0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  player: {fileID: 0}
   levelText: {fileID: 6135607221504902185}
   enemiesText: {fileID: 7837086461414734634}
-  xpFillImage: {fileID: 7150325668357931896}
+  hpFillImage: {fileID: 7150325668357931896}
   currentLevel: 2
   enemiesLeft: 0
-  currentXP: 80
-  maxXP: 100

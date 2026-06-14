@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2369893137068927766}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SPThreeOnFour
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5495962276778809670}
   - component: {fileID: 124172242565896561}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LegL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3514145488584216314}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sprites
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8525741864828050161}
   - component: {fileID: 1321403359643241153}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ArmL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1973146394317802142}
   - component: {fileID: 9052363994876465790}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LegR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -351,7 +351,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1036481251212222556}
   - component: {fileID: 3876351743676573008}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ArmR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -442,7 +442,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3456685675876997329}
   - component: {fileID: 4617260639313772038}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -537,7 +537,8 @@ GameObject:
   - component: {fileID: 8665909165165819340}
   - component: {fileID: 4985873489385658940}
   - component: {fileID: 3478149959556849871}
-  m_Layer: 0
+  - component: {fileID: 4770594904748533896}
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -596,7 +597,7 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -608,7 +609,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &8665909165165819340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -681,7 +682,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6819f51c3ebec154b8a3584f2ee4a5fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponManager
-  randomSelection: 1
+  randomSelection: 0
   defaultWeaponIndex: 0
-  weaponPrefabs: []
-  rightHandSlot: {fileID: 0}
+  weaponPrefabs:
+  - {fileID: 6332991391130001960, guid: af733a62ad0999d4285c28f084fbeb8a, type: 3}
+  leftHandSlot: {fileID: 0}
+--- !u!114 &4770594904748533896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8346628276484770278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3f304bc84834be7b28ed125e5be9a1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFollowPlayer
+  targetCamera: {fileID: 0}
+  target: {fileID: 0}
+  useStartingOffset: 0
+  offset: {x: 0, y: 0, z: -10}
+  smoothTime: 0.12

@@ -12,12 +12,12 @@ TagManager:
   - Food
   - Water
   - UI
-  - 
-  - 
+  - Wall
+  - Projectile
   - Player
   - Enemy
-  - 
-  - 
+  - Pickup
+  - Dungeon
   - 
   - 
   - 
@@ -39,6 +39,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Dungeon
+    uniqueID: 320145689
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

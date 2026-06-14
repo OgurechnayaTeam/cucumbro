@@ -21,6 +21,11 @@ public class CameraFollowPlayer : MonoBehaviour
             offset = targetCamera.transform.position - target.position;
     }
 
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+    }
+
     private void LateUpdate()
     {
         if (target == null)
