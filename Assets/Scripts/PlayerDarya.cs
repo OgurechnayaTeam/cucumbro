@@ -33,6 +33,9 @@ public class PlayerDarya : MonoBehaviour
     [Tooltip("Длительность щита по умолчанию")]
     [SerializeField] private float defaultShieldDuration = 5f;
 
+    [Header("Cheats")]
+    [SerializeField] private bool isInvulnerable;
+
     // Приватные переменные состояния
     private Rigidbody2D rb;
     private Vector2 movement;
@@ -52,6 +55,8 @@ public class PlayerDarya : MonoBehaviour
 
     /// <summary> Активен ли сейчас щит неуязвимости </summary>
     public bool IsShieldActive => isShieldActive;
+
+    public bool IsInvulnerable => isInvulnerable;
 
     /// <summary> Текущее здоровье </summary>
     public int CurrentHealth => currentHealth;
@@ -145,6 +150,12 @@ public class PlayerDarya : MonoBehaviour
     {
         if (damage <= 0 || isDead) return;
 
+        if (isInvulnerable)
+        {
+            Debug.Log("[Cheat] Урон заблокирован неуязвимостью!");
+            return;
+        }
+
         // Щит полностью блокирует урон
         if (isShieldActive)
         {
@@ -178,6 +189,12 @@ public class PlayerDarya : MonoBehaviour
         if (uiManager != null)
             uiManager.ShowGameOver();
         // TODO: Добавить логику смерти (анимация, рестарт сцены)
+    }
+
+    public void SetInvulnerable(bool invulnerable)
+    {
+        isInvulnerable = invulnerable;
+        Debug.Log($"[Cheat] Player invulnerable: {isInvulnerable}");
     }
 
     #endregion

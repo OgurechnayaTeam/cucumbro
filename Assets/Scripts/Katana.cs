@@ -18,9 +18,12 @@ public class Katana : MonoBehaviour
     [SerializeField] private Animator anim;
     [SerializeField] private Collider2D hitCollider;
 
+    [Header("Debug")]
+    [SerializeField] private bool logDamageDebug = true;
+
     private float timeSinceLastAttack;
     private bool isAttacking;
-    private HashSet<EnemyDarya> damagedEnemies = new HashSet<EnemyDarya>();
+    private HashSet<MonoBehaviour> damagedEnemies = new HashSet<MonoBehaviour>();
 
     // Кэш ссылки на игрока, чтобы не искать его каждый удар
     private PlayerDarya cachedPlayer;
@@ -43,14 +46,18 @@ public class Katana : MonoBehaviour
 
         timeSinceLastAttack = attackCooldown;
 
-        if (playerTransform == null && transform.parent != null)
+        PlayerDarya ownerPlayer = GetComponentInParent<PlayerDarya>();
+        if (ownerPlayer != null)
+            playerTransform = ownerPlayer.transform;
+        else if (playerTransform == null && transform.parent != null)
             playerTransform = transform.parent;
 
         if (katanaPivot == null)
             katanaPivot = transform;
 
-        // Находим игрока один раз при старте
-        cachedPlayer = FindAnyObjectByType<PlayerDarya>();
+        cachedPlayer = ownerPlayer != null ? ownerPlayer : FindAnyObjectByType<PlayerDarya>();
+
+        LogDamageDebug($"Initialized. ownerPlayer={(ownerPlayer != null ? ownerPlayer.name : "none")}, cachedPlayer={(cachedPlayer != null ? cachedPlayer.name : "none")}, hitCollider={(hitCollider != null ? hitCollider.name : "none")}, enemyLayerMask={enemyLayer.value}");
     }
 
     private void Update()
@@ -71,9 +78,16 @@ public class Katana : MonoBehaviour
     private bool HasEnemyInRange()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange, enemyLayer);
+        LogDamageDebug($"Range scan at {transform.position}: hits={hits.Length}, attackRange={attackRange}");
         foreach (var hit in hits)
         {
-            if (hit.GetComponentInParent<EnemyDarya>() != null) return true;
+            if (TryGetDamageableEnemy(hit, out MonoBehaviour enemy))
+            {
+                LogDamageDebug($"Enemy in range: collider={hit.name}, enemy={enemy.name}, enemyType={enemy.GetType().Name}");
+                return true;
+            }
+
+            LogDamageDebug($"Collider in enemy layer but no supported damage script: collider={hit.name}, root={hit.transform.root.name}");
         }
         return false;
     }
@@ -86,14 +100,14 @@ public class Katana : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            EnemyDarya e = hit.GetComponentInParent<EnemyDarya>();
-            if (e == null) continue;
+            if (!TryGetDamageableEnemy(hit, out MonoBehaviour enemy))
+                continue;
 
-            float dist = Vector2.Distance(transform.position, e.transform.position);
+            float dist = Vector2.Distance(transform.position, enemy.transform.position);
             if (dist < minDist)
             {
                 minDist = dist;
-                closest = e.transform;
+                closest = enemy.transform;
             }
         }
 
@@ -115,13 +129,27 @@ public class Katana : MonoBehaviour
         timeSinceLastAttack = 0f;
         damagedEnemies.Clear();
 
+        LogDamageDebug($"Attack started. position={transform.position}, damage={(cachedPlayer != null ? Mathf.RoundToInt(cachedPlayer.CurrentDamage) : fallbackDamage)}, hitCollider={(hitCollider != null ? hitCollider.name : "none")}");
+
         if (anim != null)
+        {
             anim.SetTrigger("Attack");
+            LogDamageDebug("Animator Attack trigger sent.");
+        }
+        else
+        {
+            LogDamageDebug("No Animator assigned.");
+        }
 
         if (hitCollider != null)
         {
             hitCollider.enabled = true;
+            LogDamageDebug($"Hitbox enabled. collider={hitCollider.name}, isTrigger={hitCollider.isTrigger}, bounds={hitCollider.bounds}");
             Invoke(nameof(DisableHitbox), 0.2f);
+        }
+        else
+        {
+            LogDamageDebug("Cannot enable hitbox because hitCollider is not assigned.");
         }
 
         Invoke(nameof(ResetAttackState), 0.5f);
@@ -131,14 +159,34 @@ public class Katana : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!isAttacking) return;
+        LogDamageDebug($"Trigger enter: other={other.name}, layer={LayerMask.LayerToName(other.gameObject.layer)}, isAttacking={isAttacking}");
 
-        if (((1 << other.gameObject.layer) & enemyLayer) == 0) return;
-
-        EnemyDarya enemyScript = other.GetComponentInParent<EnemyDarya>();
-        if (enemyScript != null && !damagedEnemies.Contains(enemyScript))
+        if (!isAttacking)
         {
-            // --- ИСПРАВЛЕННАЯ ЛОГИКА УРОНА ---
+            LogDamageDebug($"Ignored trigger because katana is not attacking: other={other.name}");
+            return;
+        }
+
+        if (((1 << other.gameObject.layer) & enemyLayer) == 0)
+        {
+            LogDamageDebug($"Ignored trigger because layer is outside enemyLayer mask: other={other.name}, layer={LayerMask.LayerToName(other.gameObject.layer)}, mask={enemyLayer.value}");
+            return;
+        }
+
+        if (!TryGetDamageableEnemy(other, out MonoBehaviour enemyScript))
+        {
+            LogDamageDebug($"Ignored trigger because no supported enemy damage script was found: other={other.name}, root={other.transform.root.name}");
+            return;
+        }
+
+        if (damagedEnemies.Contains(enemyScript))
+        {
+            LogDamageDebug($"Ignored duplicate hit in same attack: enemy={enemyScript.name}, enemyType={enemyScript.GetType().Name}");
+            return;
+        }
+
+        if (enemyScript != null)
+        {
             int finalDamage = fallbackDamage; // Значение по умолчанию
 
             if (cachedPlayer != null)
@@ -147,24 +195,49 @@ public class Katana : MonoBehaviour
                 finalDamage = Mathf.RoundToInt(cachedPlayer.CurrentDamage);
             }
 
-            enemyScript.TakeDamage(finalDamage);
+            enemyScript.SendMessage("TakeDamage", finalDamage, SendMessageOptions.DontRequireReceiver);
             damagedEnemies.Add(enemyScript);
 
-            Debug.Log($"[Katana] HIT {other.name} for {finalDamage} dmg!");
-            // --------------------------------
+            Debug.Log($"[Katana] HIT collider={other.name}, enemy={enemyScript.name}, enemyType={enemyScript.GetType().Name}, damage={finalDamage}");
         }
+    }
+
+    private bool TryGetDamageableEnemy(Collider2D hit, out MonoBehaviour enemy)
+    {
+        enemy = hit.GetComponentInParent<EnemyDarya>();
+        if (enemy != null)
+            return true;
+
+        enemy = hit.GetComponentInParent<Enemy>();
+        if (enemy != null)
+            return true;
+
+        enemy = hit.GetComponentInParent<EnemySkeletonOnionEnemy>();
+        return enemy != null;
     }
 
     private void DisableHitbox()
     {
         if (hitCollider != null)
+        {
             hitCollider.enabled = false;
+            LogDamageDebug($"Hitbox disabled. damagedEnemies={damagedEnemies.Count}");
+        }
     }
 
     private void ResetAttackState()
     {
+        LogDamageDebug($"Attack reset. damagedEnemies={damagedEnemies.Count}");
         isAttacking = false;
         damagedEnemies.Clear();
+    }
+
+    private void LogDamageDebug(string message)
+    {
+        if (!logDamageDebug)
+            return;
+
+        Debug.Log($"[KatanaDamageDebug] {message}", this);
     }
 
     private void OnDrawGizmosSelected()

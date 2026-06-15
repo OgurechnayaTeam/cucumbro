@@ -17,7 +17,7 @@ public class EnemyDarya : MonoBehaviour
     private float lastDamageTime = -999f;
     private float lastPlayerDamageTime = -999f;
     private bool isDead = false;
-    private bool canMove;
+    private bool canMove = true;
     private Rigidbody2D rb;         // Обязательно кэшируем Rigidbody
 
     public int CurrentHealth => currentHealth;
