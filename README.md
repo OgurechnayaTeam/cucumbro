@@ -34,8 +34,8 @@ Cucumbro is a Unity 2D action game prototype set in small procedurally generated
 ## Project Info
 
 - Course context: this project was developed as part of the "Project Development" course at Ural Federal University (UrFU).
-- Course website: <https://xn--d1acynfdde.xn--e1aajagmjdbheh6azd.xn--p1ai/>
-- Project selection document: <https://docs.google.com/spreadsheets/d/1bYXj4j211c6HlchBshuYqBvuIFWunA0nDUBZBSRdT-U/htmlview> (project number 7).
+- Course website: [студенту.прокомпетенции.рф](https://студенту.прокомпетенции.рф/)
+- Project selection document: [projects list](https://docs.google.com/spreadsheets/d/1bYXj4j211c6HlchBshuYqBvuIFWunA0nDUBZBSRdT-U/htmlview) (project number 7).
 - Engine: Unity 6000.4.0f1
 - Render pipeline: Universal Render Pipeline 2D
 - Main assets and scripts: `Assets/`

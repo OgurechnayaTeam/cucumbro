@@ -34,8 +34,8 @@ Cucumbro - это прототип 2D-экшен игры на Unity, дейст
 ## Информация о проекте
 
 - Контекст курса: проект разработан в рамках курса "Проектный практикум" в Уральском федеральном университете (УрФУ).
-- Сайт курса: <https://xn--d1acynfdde.xn--e1aajagmjdbheh6azd.xn--p1ai/>
-- Документ выбора проектов: <https://docs.google.com/spreadsheets/d/1bYXj4j211c6HlchBshuYqBvuIFWunA0nDUBZBSRdT-U/htmlview> (проект номер 7).
+- Сайт курса: [студенту.прокомпетенции.рф](https://студенту.прокомпетенции.рф/)
+- Документ выбора проектов: [список проектов](https://docs.google.com/spreadsheets/d/1bYXj4j211c6HlchBshuYqBvuIFWunA0nDUBZBSRdT-U/htmlview) (проект номер 7).
 - Движок: Unity 6000.4.0f1
 - Render pipeline: Universal Render Pipeline 2D
 - Основные ассеты и скрипты: `Assets/`
