@@ -23,7 +23,7 @@ Cucumbro is a Unity 2D action game prototype set in small procedurally generated
 
 1. Open the project in Unity 6000.4.0f1 or a compatible Unity 6 version.
 2. Let Unity restore packages from `Packages/manifest.json`.
-3. Open a scene from `Assets/Scenes/` or `Assets/cucumbro.unity`.
+3. Open a scene `Assets/Scenes/SampleScene.unity`.
 4. Press Play to test the current gameplay prototype.
 
 ## Web Build and GitHub Pages
