@@ -1,1 +1,45 @@
-# cucumbro
+# Cucumbro
+
+Cucumbro is a Unity 2D action game prototype set in small procedurally generated dungeons. The player explores rooms, fights vegetable-themed enemies, collects pickups, and can start runs with different weapon classes.
+
+## Features
+
+- Procedural dungeon and room generation.
+- Player movement with Unity Input System.
+- Multiple player/weapon scripts, including katana, gun, shield, and projectile gameplay.
+- Enemy spawning, activation, and basic combat behavior.
+- Pickups such as food, batteries, and shields.
+- Several Unity scenes for testing and development.
+
+## Project Info
+
+- Engine: Unity 6000.4.0f1
+- Render pipeline: Universal Render Pipeline 2D
+- Main assets and scripts: `Assets/`
+- Project settings: `ProjectSettings/`
+- Package manifest: `Packages/manifest.json`
+
+## Getting Started
+
+1. Open the project in Unity 6000.4.0f1 or a compatible Unity 6 version.
+2. Let Unity restore packages from `Packages/manifest.json`.
+3. Open a scene from `Assets/Scenes/` or `Assets/cucumbro.unity`.
+4. Press Play to test the current gameplay prototype.
+
+## Web Build and GitHub Pages
+
+This repository includes GitHub Actions workflows for WebGL releases and GitHub Pages deployment.
+
+1. Add Unity activation secrets to the GitHub repository: `UNITY_LICENSE`, `UNITY_EMAIL`, and `UNITY_PASSWORD`.
+2. In repository settings, set GitHub Pages source to GitHub Actions.
+3. Push a version tag, for example `v0.1.0`.
+4. The `Build WebGL Release` workflow builds the Unity WebGL player and attaches `cucumbro-webgl.zip` to the GitHub Release.
+5. The `Deploy Pages From Latest Release` workflow downloads `cucumbro-webgl.zip` from the latest release and publishes it to GitHub Pages.
+
+## Repository Structure
+
+- `Assets/Scripts/` - gameplay scripts for player, enemies, weapons, UI, and level flow.
+- `Assets/_Scripts/` - procedural dungeon generation scripts and ScriptableObject data.
+- `Assets/Prefabs/` - player, enemy, weapon, item, and UI prefabs.
+- `Assets/Tiles/` - tile assets and palettes for dungeon floors and walls.
+- `ProjectSettings/` - Unity project configuration.

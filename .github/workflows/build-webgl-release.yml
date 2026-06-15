@@ -1,0 +1,70 @@
+name: Build WebGL Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: webgl-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build WebGL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-WebGL-
+
+      - name: Build WebGL player
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: 6000.4.0f1
+          targetPlatform: WebGL
+          buildsPath: build
+
+      - name: Package WebGL build
+        shell: bash
+        run: |
+          set -euo pipefail
+          webgl_dir="$(find build -type f -name index.html -printf '%h\n' | head -n 1)"
+          if [ -z "$webgl_dir" ]; then
+            echo "Could not find WebGL index.html in build output." >&2
+            find build -maxdepth 4 -type f | sort >&2
+            exit 1
+          fi
+          (cd "$webgl_dir" && zip -r "$GITHUB_WORKSPACE/cucumbro-webgl.zip" .)
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumbro-webgl
+          path: cucumbro-webgl.zip
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: cucumbro-webgl.zip
+          generate_release_notes: true
