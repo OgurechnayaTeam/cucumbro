@@ -1,5 +1,15 @@
 # Cucumbro
 
+<p align="center">
+  <a href="https://ogurechnayateam.github.io/cucumbro/">
+    <img src="https://avatars.githubusercontent.com/u/271751028?s=200&v=4" alt="Иконка Cucumbro" width="96" height="96">
+  </a>
+</p>
+
+<h2 align="center">
+  <a href="https://ogurechnayateam.github.io/cucumbro/">Играть в Cucumbro на GitHub Pages</a>
+</h2>
+
 Cucumbro - это прототип 2D-экшен игры на Unity, действие которой происходит в небольших процедурно генерируемых подземельях. Игрок исследует комнаты, сражается с овощными врагами, собирает предметы и может начинать забеги с разными классами оружия.
 
 ## Возможности

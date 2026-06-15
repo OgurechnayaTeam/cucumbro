@@ -1,5 +1,15 @@
 # Cucumbro
 
+<p align="center">
+  <a href="https://ogurechnayateam.github.io/cucumbro/">
+    <img src="https://avatars.githubusercontent.com/u/271751028?s=200&v=4" alt="Cucumbro icon" width="96" height="96">
+  </a>
+</p>
+
+<h2 align="center">
+  <a href="https://ogurechnayateam.github.io/cucumbro/">Play Cucumbro on GitHub Pages</a>
+</h2>
+
 Cucumbro is a Unity 2D action game prototype set in small procedurally generated dungeons. The player explores rooms, fights vegetable-themed enemies, collects pickups, and can start runs with different weapon classes.
 
 ## Features
