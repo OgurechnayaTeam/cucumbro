@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class UIManager : MonoBehaviour
 {
@@ -18,23 +19,30 @@ public class UIManager : MonoBehaviour
 
     private GameObject gameOverPanel;
     private GameObject classSelectionPanel;
+    private GameObject cheatPanel;
+    private Toggle invulnerableToggle;
     private bool enemiesHaveSpawned;
     private Action<WeaponManager.PlayerClass> classSelectedCallback;
 
     void Start()
     {
         EnsureGameOverPanel();
+        EnsureCheatPanel();
         UpdateUI();
     }
 
     private void Update()
     {
+        if (Keyboard.current != null && Keyboard.current.xKey.wasPressedThisFrame)
+            ToggleCheatPanel();
+
         UpdateHealthBar();
     }
 
     public void BindPlayer(Transform playerTransform)
     {
         player = playerTransform != null ? playerTransform.GetComponent<PlayerDarya>() : null;
+        SyncCheatPanel();
         UpdateUI();
     }
 
@@ -159,6 +167,131 @@ public class UIManager : MonoBehaviour
         buttonText.color = Color.black;
 
         SetGameOverVisible(false);
+    }
+
+    private void EnsureCheatPanel()
+    {
+        if (cheatPanel != null)
+            return;
+
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null)
+            return;
+
+        cheatPanel = new GameObject("CheatPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        cheatPanel.transform.SetParent(canvas.transform, false);
+
+        RectTransform panelRect = cheatPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(1f, 1f);
+        panelRect.anchorMax = new Vector2(1f, 1f);
+        panelRect.pivot = new Vector2(1f, 1f);
+        panelRect.anchoredPosition = new Vector2(-24f, -24f);
+        panelRect.sizeDelta = new Vector2(280f, 140f);
+
+        Image panelImage = cheatPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.05f, 0.06f, 0.08f, 0.9f);
+
+        GameObject titleObject = new GameObject("Title", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        titleObject.transform.SetParent(cheatPanel.transform, false);
+        RectTransform titleRect = titleObject.GetComponent<RectTransform>();
+        titleRect.anchorMin = new Vector2(0f, 1f);
+        titleRect.anchorMax = new Vector2(1f, 1f);
+        titleRect.pivot = new Vector2(0.5f, 1f);
+        titleRect.anchoredPosition = new Vector2(0f, -12f);
+        titleRect.sizeDelta = new Vector2(-24f, 32f);
+
+        TMP_Text titleText = titleObject.GetComponent<TMP_Text>();
+        titleText.text = "Cheats";
+        titleText.alignment = TextAlignmentOptions.Left;
+        titleText.fontSize = 24f;
+        titleText.color = Color.white;
+
+        CreateInvulnerableToggle();
+        SyncCheatPanel();
+        cheatPanel.SetActive(false);
+    }
+
+    private void CreateInvulnerableToggle()
+    {
+        GameObject toggleObject = new GameObject("InvulnerableToggle", typeof(RectTransform), typeof(Toggle));
+        toggleObject.transform.SetParent(cheatPanel.transform, false);
+
+        RectTransform toggleRect = toggleObject.GetComponent<RectTransform>();
+        toggleRect.anchorMin = new Vector2(0f, 1f);
+        toggleRect.anchorMax = new Vector2(1f, 1f);
+        toggleRect.pivot = new Vector2(0.5f, 1f);
+        toggleRect.anchoredPosition = new Vector2(0f, -58f);
+        toggleRect.sizeDelta = new Vector2(-24f, 42f);
+
+        GameObject backgroundObject = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        backgroundObject.transform.SetParent(toggleObject.transform, false);
+        RectTransform backgroundRect = backgroundObject.GetComponent<RectTransform>();
+        backgroundRect.anchorMin = new Vector2(0f, 0.5f);
+        backgroundRect.anchorMax = new Vector2(0f, 0.5f);
+        backgroundRect.pivot = new Vector2(0f, 0.5f);
+        backgroundRect.anchoredPosition = Vector2.zero;
+        backgroundRect.sizeDelta = new Vector2(24f, 24f);
+
+        Image backgroundImage = backgroundObject.GetComponent<Image>();
+        backgroundImage.color = new Color(1f, 1f, 1f, 0.95f);
+
+        GameObject checkmarkObject = new GameObject("Checkmark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        checkmarkObject.transform.SetParent(backgroundObject.transform, false);
+        RectTransform checkmarkRect = checkmarkObject.GetComponent<RectTransform>();
+        checkmarkRect.anchorMin = new Vector2(0.5f, 0.5f);
+        checkmarkRect.anchorMax = new Vector2(0.5f, 0.5f);
+        checkmarkRect.pivot = new Vector2(0.5f, 0.5f);
+        checkmarkRect.anchoredPosition = Vector2.zero;
+        checkmarkRect.sizeDelta = new Vector2(14f, 14f);
+
+        Image checkmarkImage = checkmarkObject.GetComponent<Image>();
+        checkmarkImage.color = new Color(0.05f, 0.68f, 0.35f, 1f);
+
+        GameObject labelObject = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        labelObject.transform.SetParent(toggleObject.transform, false);
+        RectTransform labelRect = labelObject.GetComponent<RectTransform>();
+        labelRect.anchorMin = new Vector2(0f, 0f);
+        labelRect.anchorMax = new Vector2(1f, 1f);
+        labelRect.offsetMin = new Vector2(36f, 0f);
+        labelRect.offsetMax = Vector2.zero;
+
+        TMP_Text labelText = labelObject.GetComponent<TMP_Text>();
+        labelText.text = "Player invulnerable";
+        labelText.alignment = TextAlignmentOptions.MidlineLeft;
+        labelText.fontSize = 18f;
+        labelText.color = Color.white;
+
+        invulnerableToggle = toggleObject.GetComponent<Toggle>();
+        invulnerableToggle.targetGraphic = backgroundImage;
+        invulnerableToggle.graphic = checkmarkImage;
+        invulnerableToggle.onValueChanged.AddListener(SetPlayerInvulnerable);
+    }
+
+    private void ToggleCheatPanel()
+    {
+        EnsureCheatPanel();
+        if (cheatPanel == null)
+            return;
+
+        cheatPanel.SetActive(!cheatPanel.activeSelf);
+        SyncCheatPanel();
+    }
+
+    private void SyncCheatPanel()
+    {
+        if (invulnerableToggle == null)
+            return;
+
+        invulnerableToggle.SetIsOnWithoutNotify(player != null && player.IsInvulnerable);
+    }
+
+    private void SetPlayerInvulnerable(bool invulnerable)
+    {
+        if (player == null)
+            BindPlayer(FindAnyObjectByType<PlayerDarya>()?.transform);
+
+        if (player != null)
+            player.SetInvulnerable(invulnerable);
     }
 
     private void EnsureClassSelectionPanel()

@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     private float lastDamageTime = -999f; // чтобы первый удар прошёл сразу
     private float lastPlayerDamageTime = -999f;
     private bool isDead = false;
-    private bool canMove;
+    private bool canMove = true;
     private Rigidbody2D rb;
 
     public int CurrentHealth => currentHealth;

@@ -24,6 +24,7 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Activation")]
     [SerializeField] private Transform playerTransform;
+    [SerializeField, Min(0f)] private float proximityActivationDistance = 8f;
 
     private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
     private readonly List<RoomEnemyGroup> roomEnemyGroups = new List<RoomEnemyGroup>();
@@ -167,7 +168,7 @@ public class EnemyManager : MonoBehaviour
         Vector2Int playerTile = activeDungeonGenerator.WorldToCell(playerTransform.position);
         foreach (RoomEnemyGroup group in roomEnemyGroups)
         {
-            if (group.Activated || !group.Tiles.Contains(playerTile))
+            if (group.Activated || (!group.Tiles.Contains(playerTile) && !IsPlayerNearGroup(group)))
             {
                 continue;
             }
@@ -313,6 +314,24 @@ public class EnemyManager : MonoBehaviour
         return false;
     }
 
+    private bool IsPlayerNearGroup(RoomEnemyGroup group)
+    {
+        if (playerTransform == null || proximityActivationDistance <= 0f)
+            return false;
+
+        float sqrActivationDistance = proximityActivationDistance * proximityActivationDistance;
+        foreach (GameObject enemy in group.Enemies)
+        {
+            if (enemy == null)
+                continue;
+
+            if ((enemy.transform.position - playerTransform.position).sqrMagnitude <= sqrActivationDistance)
+                return true;
+        }
+
+        return false;
+    }
+
     private void EnsureEnemyParent()
     {
         if (enemyParent != null)
@@ -346,6 +365,7 @@ public class EnemyManager : MonoBehaviour
     private void OnValidate()
     {
         edgePaddingTiles = Mathf.Max(0, edgePaddingTiles);
+        proximityActivationDistance = Mathf.Max(0f, proximityActivationDistance);
 
         foreach (EnemySpawnRule rule in spawnRules)
         {

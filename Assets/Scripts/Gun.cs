@@ -13,6 +13,11 @@ public class Gun : MonoBehaviour
     [SerializeField] private Animator gunAnimator;         // Аниматор пистолета (назначается в Inspector)
     [SerializeField] private string shootAnimTrigger = "Fire"; // Название триггера в аниматоре
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip attackSound;
+    [SerializeField, Range(0f, 1f)] private float attackSoundVolume = 1f;
+    [SerializeField] private AudioSource audioSource;
+
     [Header("Поиск цели")]
     [SerializeField] private LayerMask enemyLayer;         // Слой врагов (Enemy)
     [SerializeField] private LayerMask wallLayer;          // Слой стен (Wall)
@@ -24,6 +29,9 @@ public class Gun : MonoBehaviour
 
     void Awake()
     {
+        if (audioSource == null && attackSound != null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
         // При старте запоминаем, где находится дуло относительно центра пистолета
         if (muzzle != null)
         {
@@ -183,6 +191,8 @@ public class Gun : MonoBehaviour
     /// </summary>
     private void PlayShootEffects()
     {
+        PlayAttackSound();
+
         // 1. Запуск анимации стрельбы (триггер "Fire")
         if (gunAnimator != null && !string.IsNullOrEmpty(shootAnimTrigger))
         {
@@ -198,6 +208,17 @@ public class Gun : MonoBehaviour
             // Автоматически удаляем вспышку через короткое время (0.05 сек), чтобы она не висела в воздухе
             Destroy(flash, 0.05f);
         }
+    }
+
+    private void PlayAttackSound()
+    {
+        if (attackSound == null)
+            return;
+
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.PlayOneShot(attackSound, attackSoundVolume);
     }
 
     // Визуализация радиуса поиска в редакторе (желтый круг)
