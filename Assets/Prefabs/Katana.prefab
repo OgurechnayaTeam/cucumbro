@@ -118,6 +118,9 @@ MonoBehaviour:
     m_Bits: 512
   anim: {fileID: 8628504042757350504}
   hitCollider: {fileID: 3753453372252713131}
+  attackSound: {fileID: 8300000, guid: ae562e739cea94affaf85227171a36db, type: 3}
+  attackSoundVolume: 1
+  audioSource: {fileID: 0}
   logDamageDebug: 1
 --- !u!95 &8628504042757350504
 Animator:

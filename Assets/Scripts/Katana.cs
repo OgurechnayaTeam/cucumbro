@@ -18,6 +18,11 @@ public class Katana : MonoBehaviour
     [SerializeField] private Animator anim;
     [SerializeField] private Collider2D hitCollider;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip attackSound;
+    [SerializeField, Range(0f, 1f)] private float attackSoundVolume = 1f;
+    [SerializeField] private AudioSource audioSource;
+
     [Header("Debug")]
     [SerializeField] private bool logDamageDebug = true;
 
@@ -30,6 +35,9 @@ public class Katana : MonoBehaviour
 
     private void Start()
     {
+        if (audioSource == null && attackSound != null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
         if (hitCollider != null)
         {
             hitCollider.enabled = false;
@@ -130,6 +138,7 @@ public class Katana : MonoBehaviour
         damagedEnemies.Clear();
 
         LogDamageDebug($"Attack started. position={transform.position}, damage={(cachedPlayer != null ? Mathf.RoundToInt(cachedPlayer.CurrentDamage) : fallbackDamage)}, hitCollider={(hitCollider != null ? hitCollider.name : "none")}");
+        PlayAttackSound();
 
         if (anim != null)
         {
@@ -238,6 +247,17 @@ public class Katana : MonoBehaviour
             return;
 
         Debug.Log($"[KatanaDamageDebug] {message}", this);
+    }
+
+    private void PlayAttackSound()
+    {
+        if (attackSound == null)
+            return;
+
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.PlayOneShot(attackSound, attackSoundVolume);
     }
 
     private void OnDrawGizmosSelected()

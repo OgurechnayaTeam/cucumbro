@@ -135,6 +135,9 @@ MonoBehaviour:
   muzzleFlashPrefab: {fileID: 4064873687251165965, guid: afce892c17f1a274d9933e823f4f085b, type: 3}
   gunAnimator: {fileID: 0}
   shootAnimTrigger: Fire
+  attackSound: {fileID: 8300000, guid: 5f0d4646f64e3477295da0eb5f7207dd, type: 3}
+  attackSoundVolume: 1
+  audioSource: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 512
