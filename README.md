@@ -33,11 +33,22 @@ Cucumbro is a Unity 2D action game prototype set in small procedurally generated
 
 ## Project Info
 
+- Course context: this project was developed as part of the "Project Development" course at Ural Federal University (UrFU).
+- Course website: <https://xn--d1acynfdde.xn--e1aajagmjdbheh6azd.xn--p1ai/>
+- Project selection document: <https://docs.google.com/spreadsheets/d/1bYXj4j211c6HlchBshuYqBvuIFWunA0nDUBZBSRdT-U/htmlview> (project number 7).
 - Engine: Unity 6000.4.0f1
 - Render pipeline: Universal Render Pipeline 2D
 - Main assets and scripts: `Assets/`
 - Project settings: `ProjectSettings/`
 - Package manifest: `Packages/manifest.json`
+
+## References
+
+- Procedural dungeon generation was based on the Sunny Valley Studio tutorial repository: <https://github.com/SunnyValleyStudio/Unity_2D_Procedural_Dungoen_Tutorial>.
+
+## AI Usage
+
+Generative AI tools were used as assistants during development and documentation: for troubleshooting Unity/C# issues, checking GitHub workflow setup, improving README text, and reviewing report wording. Final decisions, code integration, and project verification were done by the team.
 
 ## Getting Started
 
@@ -63,3 +74,7 @@ This repository includes GitHub Actions workflows for WebGL releases and GitHub 
 - `Assets/Prefabs/` - player, enemy, weapon, item, and UI prefabs.
 - `Assets/Tiles/` - tile assets and palettes for dungeon floors and walls.
 - `ProjectSettings/` - Unity project configuration.
+
+## License
+
+This project is released under the [MIT License](LICENSE).
