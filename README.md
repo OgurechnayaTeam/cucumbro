@@ -48,7 +48,7 @@ Cucumbro is a Unity 2D action game prototype set in small procedurally generated
 
 ## AI Usage
 
-Generative AI tools were used as assistants during development and documentation: for troubleshooting Unity/C# issues, checking GitHub workflow setup, improving README text, and reviewing report wording. Final decisions, code integration, and project verification were done by the team.
+Generative AI tools were used as assistants during development, documentation, and partial creation of the initial graphic assets: for troubleshooting Unity/C# issues, checking GitHub workflow setup, improving README text, reviewing report wording, and preparing early visual materials. Final decisions, code integration, and project verification were handled by the team; the final graphic assets were developed and finished by team members.
 
 ## Getting Started
 
