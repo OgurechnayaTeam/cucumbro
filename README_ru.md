@@ -23,7 +23,7 @@ Cucumbro - это прототип 2D-экшен игры на Unity, дейст
 
 1. Откройте проект в Unity 6000.4.0f1 или совместимой версии Unity 6.
 2. Дождитесь восстановления пакетов из `Packages/manifest.json`.
-3. Откройте сцену из `Assets/Scenes/` или `Assets/cucumbro.unity`.
+3. Откройте сцену `Assets/Scenes/SampleScene.unity`.
 4. Нажмите Play, чтобы протестировать текущий прототип.
 
 ## Web-сборка и GitHub Pages
